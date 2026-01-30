@@ -1,4 +1,9 @@
 "use client";
+import {
+  getCurrentUser,
+  logout,
+  onAuthStateChange,
+} from "@/app/common/services/pocketbase.service";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -18,19 +23,38 @@ import {
   Settings,
   User2,
 } from "lucide-react";
-import { signOut, useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { ThemeToggle } from "./themeToggle";
 
 const HeaderOptions = () => {
   const router = useRouter();
-  const { data: session, status } = useSession();
+  const [user, setUser] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  if (status === "loading") {
-    return null;
-  }
+  useEffect(() => {
+    // Initial check
+    const currentUser = getCurrentUser();
+    setUser(currentUser);
+    setIsLoading(false);
+
+    // Subscribe to changes
+    const unsubscribe = onAuthStateChange((token, record) => {
+      setUser(record);
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, []);
+
+  const handleLogout = () => {
+    logout();
+    router.push("/");
+    router.refresh();
+  };
 
   const signInButton = () => {
     return (
@@ -43,28 +67,40 @@ const HeaderOptions = () => {
     );
   };
 
+  const getProfileImage = (user: any) => {
+    if (!user.avatar) return null;
+    // Construct PocketBase file URL
+    const pbUrl =
+      process.env.NEXT_PUBLIC_POCKETBASE_URL || "https://sos-be.jkim.win";
+    return `${pbUrl}/api/files/${user.collectionId}/${user.id}/${user.avatar}`;
+  };
+
   const dropdownMenu = () => {
-    if (!session?.user) {
+    if (!user) {
       return null;
     }
+
+    // Display name logic: name field or combine fName/lName if available, or email
+    const displayName = user.name || user.email;
+    const profileImage = getProfileImage(user);
 
     return (
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="outline">
-            {!session.user.image ? (
+            {!profileImage ? (
               <User2 strokeWidth={1.5} className="h-5 w-5 -ml-1" />
             ) : (
               <Image
-                src={session.user.image}
+                src={profileImage}
                 alt="Profile Picture"
                 width={24}
                 height={24}
                 priority={true}
-                className="rounded-full -ml-1"
+                className="rounded-full -ml-1 aspect-square object-cover"
               />
             )}
-            <span className="mx-2">{session.user.name}</span>
+            <span className="mx-2 truncate max-w-[100px]">{displayName}</span>
             <ChevronDown strokeWidth={1.5} className="h-5 w-5" />
           </Button>
         </DropdownMenuTrigger>
@@ -97,18 +133,8 @@ const HeaderOptions = () => {
               <span className="mx-3">Settings</span>
             </DropdownMenuItem>
           </DropdownMenuGroup>
-          {/* <DropdownMenuSeparator />
-            <DropdownMenuItem
-              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-              className="cursor-pointer">
-              <SunIcon className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-              <MoonIcon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-              <span className="mx-3">Toggle Theme</span>
-            </DropdownMenuItem> */}
           <DropdownMenuSeparator />
-          <DropdownMenuItem
-            onClick={() => signOut()}
-            className="cursor-pointer">
+          <DropdownMenuItem onClick={handleLogout} className="cursor-pointer">
             <LogOut strokeWidth={1.5} className="h-4 w-4" />
             <span className="mx-3">Sign out</span>
           </DropdownMenuItem>
@@ -117,13 +143,16 @@ const HeaderOptions = () => {
     );
   };
 
+  if (isLoading) {
+    return null; // Or skeleton
+  }
+
   return (
     <>
-      {/* <SearchBar /> */}
       <TooltipProvider>
         <ThemeToggle />
       </TooltipProvider>
-      {session?.user ? dropdownMenu() : signInButton()}
+      {user ? dropdownMenu() : signInButton()}
     </>
   );
 };

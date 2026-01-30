@@ -1,7 +1,13 @@
 "use client";
 import { tosModalAtom } from "@/app/common/atoms/atoms";
 import Spinner from "@/app/common/components/spinner";
-import { registerUser } from "@/app/common/services/auth.service";
+import {
+  isAuthenticated,
+  getCurrentUser,
+  loginWithGoogle,
+  onAuthStateChange,
+  registerWithEmail,
+} from "@/app/common/services/pocketbase.service";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -17,10 +23,9 @@ import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useAtom } from "jotai";
 import { Mail } from "lucide-react";
-import { signIn, useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { FcGoogle } from "react-icons/fc";
@@ -51,6 +56,7 @@ interface RegisterFormProps extends React.HTMLAttributes<HTMLDivElement> {}
 export function RegisterForm({ className, ...props }: RegisterFormProps) {
   const [tosModal, setTosModal] = useAtom(tosModalAtom);
   const [checked, setChecked] = useState(false);
+  const router = useRouter();
 
   const [isLoadingEmail, setIsLoadingEmail] = useState<boolean>(false);
   const [isLoadingGoogle, setIsLoadingGoogle] = useState<boolean>(false);
@@ -72,56 +78,97 @@ export function RegisterForm({ className, ...props }: RegisterFormProps) {
     if (!isLoadingGoogle) {
       return;
     }
-    setTimeout(() => {
+    const timeout = setTimeout(() => {
       setIsLoadingGoogle(false);
-    }, 5000);
+    }, 10000);
+    return () => clearTimeout(timeout);
   }, [isLoadingGoogle]);
 
   useEffect(() => {
     if (!isLoadingEmail) {
       return;
     }
-    setTimeout(() => {
+    const timeout = setTimeout(() => {
       setIsLoadingEmail(false);
-    }, 5000);
+    }, 10000);
+    return () => clearTimeout(timeout);
   }, [isLoadingEmail]);
 
   async function onSubmitGoogle(event: React.SyntheticEvent) {
+    event.preventDefault();
     setIsLoadingGoogle(true);
-    signIn("google", {
-      redirect: true,
-      callbackUrl: "/profile",
-    });
+
+    try {
+      const result = await loginWithGoogle();
+
+      if (result.success) {
+        toast({
+          title: "Welcome!",
+          description: "You have successfully signed in with Google.",
+        });
+        router.push("/profile");
+      } else {
+        toast({
+          title: "Uh oh! Something went wrong.",
+          variant: "destructive",
+          description: result.error || "Google authentication failed.",
+        });
+      }
+    } catch (error: any) {
+      toast({
+        title: "Uh oh! Something went wrong.",
+        variant: "destructive",
+        description: error?.message || "Google authentication failed.",
+      });
+    } finally {
+      setIsLoadingGoogle(false);
+    }
   }
 
   async function onSubmitEmail(data: z.infer<typeof RegisterFormSchema>) {
     setIsLoadingEmail(true);
 
-    // if (!checked) {
-    //   toast({
-    //     title: "Please accept the terms and conditions.",
-    //   });
-    //   return;
-    // }
-
-    const response = await registerUser(data);
-
-    if (response.status === "ok") {
-      await signIn("credentials", {
-        email: data.email,
-        password: data.password1,
-        redirect: true,
-        callbackUrl: "/profile",
+    if (data.password1 !== data.password2) {
+      toast({
+        title: "Passwords do not match",
+        variant: "destructive",
       });
+      setIsLoadingEmail(false);
       return;
     }
 
-    if (response?.error) {
+    try {
+      const result = await registerWithEmail(
+        data.email,
+        data.password1,
+        data.password2,
+        {
+          name: `${data.fName} ${data.lName}`,
+          toc_accepted: data.tocAccepted,
+        }
+      );
+
+      if (result.success) {
+        toast({
+          title: "Welcome to SOS!",
+          description: "Your account has been created successfully.",
+        });
+        router.push("/profile");
+      } else {
+        toast({
+          title: "Uh oh! Something went wrong.",
+          variant: "destructive",
+          description: result.error || "Registration failed.",
+        });
+      }
+    } catch (error: any) {
       toast({
         title: "Uh oh! Something went wrong.",
         variant: "destructive",
-        description: response.error.message,
+        description: error?.message || "Internal Server Error.",
       });
+    } finally {
+      setIsLoadingEmail(false);
     }
   }
 
@@ -259,13 +306,45 @@ export function RegisterForm({ className, ...props }: RegisterFormProps) {
 }
 
 const Register = () => {
-  const { data: session, status } = useSession();
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(true);
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
-    if (session?.user) {
-      redirect("/profile");
+    setIsMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isMounted) return;
+
+    // Check if already authenticated (only on client-side)
+    try {
+      if (isAuthenticated() && getCurrentUser()) {
+        router.push("/profile");
+        return;
+      }
+    } catch (e) {
+      // Ignore auth check errors on initial load
     }
-  }, [session]);
+    setIsLoading(false);
+
+    // Subscribe to auth state changes
+    const unsubscribe = onAuthStateChange((token, record) => {
+      if (token && record) {
+        router.push("/profile");
+      }
+    });
+
+    return () => unsubscribe();
+  }, [router, isMounted]);
+
+  if (!isMounted || isLoading) {
+    return (
+      <section className="h-full w-full flex items-center justify-center">
+        <Spinner className="h-8 w-8 animate-spin" />
+      </section>
+    );
+  }
 
   return (
     <section className="h-full w-full flex">

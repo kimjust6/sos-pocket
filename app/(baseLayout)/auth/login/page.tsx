@@ -1,6 +1,13 @@
 "use client";
 
 import Spinner from "@/app/common/components/spinner";
+import {
+  getCurrentUser,
+  isAuthenticated,
+  loginWithEmail,
+  loginWithGoogle,
+  onAuthStateChange,
+} from "@/app/common/services/pocketbase.service";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -15,10 +22,9 @@ import { toast } from "@/components/ui/use-toast";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Mail } from "lucide-react";
-import { signIn, useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { FcGoogle } from "react-icons/fc";
@@ -38,6 +44,7 @@ interface LoginFormProps extends React.HTMLAttributes<HTMLDivElement> {}
 export function LoginForm({ className, ...props }: LoginFormProps) {
   const [isLoadingEmail, setIsLoadingEmail] = useState<boolean>(false);
   const [isLoadingGoogle, setIsLoadingGoogle] = useState<boolean>(false);
+  const router = useRouter();
 
   const form = useForm<z.infer<typeof LoginFormSchema>>({
     resolver: zodResolver(LoginFormSchema),
@@ -51,46 +58,80 @@ export function LoginForm({ className, ...props }: LoginFormProps) {
     if (!isLoadingGoogle) {
       return;
     }
-    setTimeout(() => {
+    const timeout = setTimeout(() => {
       setIsLoadingGoogle(false);
-    }, 3000);
+    }, 10000);
+    return () => clearTimeout(timeout);
   }, [isLoadingGoogle]);
 
   useEffect(() => {
     if (!isLoadingEmail) {
       return;
     }
-    setTimeout(() => {
+    const timeout = setTimeout(() => {
       setIsLoadingEmail(false);
-    }, 3000);
+    }, 10000);
+    return () => clearTimeout(timeout);
   }, [isLoadingEmail]);
 
   async function onSubmitGoogle(event: React.SyntheticEvent) {
+    event.preventDefault();
     setIsLoadingGoogle(true);
-    signIn("google", {
-      redirect: true,
-      callbackUrl: "/profile",
-    });
+
+    try {
+      const result = await loginWithGoogle();
+
+      if (result.success) {
+        toast({
+          title: "Welcome!",
+          description: "You have successfully signed in with Google.",
+        });
+        router.push("/profile");
+      } else {
+        toast({
+          title: "Uh oh! Something went wrong.",
+          variant: "destructive",
+          description: result.error || "Google authentication failed.",
+        });
+      }
+    } catch (error: any) {
+      toast({
+        title: "Uh oh! Something went wrong.",
+        variant: "destructive",
+        description: error?.message || "Google authentication failed.",
+      });
+    } finally {
+      setIsLoadingGoogle(false);
+    }
   }
 
   async function onSubmitEmail(data: z.infer<typeof LoginFormSchema>) {
     setIsLoadingEmail(true);
 
-    const response = await signIn("credentials", {
-      email: data.email,
-      password: data.password,
-      redirect: false,
-    });
+    try {
+      const result = await loginWithEmail(data.email, data.password);
 
-    if (response?.error) {
+      if (result.success) {
+        toast({
+          title: "Welcome!",
+          description: "You have successfully signed in.",
+        });
+        router.push("/profile");
+      } else {
+        toast({
+          title: "Uh oh! Something went wrong.",
+          variant: "destructive",
+          description: result.error || "Invalid email or password.",
+        });
+      }
+    } catch (error: any) {
       toast({
         title: "Uh oh! Something went wrong.",
         variant: "destructive",
-        description:
-          response?.status === 401
-            ? "Invalid email or password."
-            : "Internal Server Error.",
+        description: error?.message || "Internal Server Error.",
       });
+    } finally {
+      setIsLoadingEmail(false);
     }
   }
 
@@ -178,13 +219,45 @@ export function LoginForm({ className, ...props }: LoginFormProps) {
 }
 
 const Login = () => {
-  const { data: session, status } = useSession();
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(true);
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
-    if (status !== "loading" && session?.user) {
-      redirect("/profile");
+    setIsMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isMounted) return;
+
+    // Check if already authenticated (only on client-side)
+    try {
+      if (isAuthenticated() && getCurrentUser()) {
+        router.push("/profile");
+        return;
+      }
+    } catch (e) {
+      // Ignore auth check errors on initial load
     }
-  }, [status]);
+    setIsLoading(false);
+
+    // Subscribe to auth state changes
+    const unsubscribe = onAuthStateChange((token, record) => {
+      if (token && record) {
+        router.push("/profile");
+      }
+    });
+
+    return () => unsubscribe();
+  }, [router, isMounted]);
+
+  if (!isMounted || isLoading) {
+    return (
+      <section className="h-full w-full flex items-center justify-center">
+        <Spinner className="h-8 w-8 animate-spin" />
+      </section>
+    );
+  }
 
   return (
     <section className="h-full w-full flex">
@@ -195,7 +268,7 @@ const Login = () => {
               Login to SOS
             </p>
             <p className="text-sm text-muted-foreground">
-              Don't have an account?{" "}
+              Don&apos;t have an account?{" "}
               <Link
                 href="/auth/register"
                 className="underline underline-offset-4 hover:text-primary">

@@ -1,60 +1,77 @@
 "use client";
-import { getOauthUser } from "@/app/common/services/auth.service";
+import {
+  getCurrentUser,
+  onAuthStateChange,
+} from "@/app/common/services/pocketbase.service";
 import { Card, CardContent } from "@/components/ui/card";
 import { User2 } from "lucide-react";
-import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 
 const ProfilePage = () => {
-  const { data: session, status } = useSession();
-  const [profile, setProfile] = useState<any>({});
-
-  if (status !== "loading") {
-  }
+  const [user, setUser] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const getMyOauthUser = async () => {
-      const s = session as any;
-      if (session && s?.user?.email && s?.user?.provider) {
-        const response = await getOauthUser(s?.user?.email, s?.user?.provider);
-        if (response?.status == "ok") {
-          setProfile(response.data);
-        }
-      }
-    };
+    // Initial check
+    const currentUser = getCurrentUser();
+    setUser(currentUser);
+    setIsLoading(false);
 
-    getMyOauthUser();
-  }, [status]);
-  return (
-    status !== "loading" &&
-    profile && (
+    // Subscribe to auth changes
+    const unsubscribe = onAuthStateChange((token, record) => {
+      setUser(record);
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, []);
+
+  const getProfileImage = (user: any) => {
+    if (!user?.avatar) return null;
+    const pbUrl =
+      process.env.NEXT_PUBLIC_POCKETBASE_URL || "https://sos-be.jkim.win";
+    return `${pbUrl}/api/files/${user.collectionId}/${user.id}/${user.avatar}`;
+  };
+
+  if (isLoading) {
+    return null; // Or legitimate loading spinner
+  }
+
+  if (!user) {
+    return (
       <section className="w-full mt-24 flex justify-center items-center flex-col gap-4">
-        <Card className="glassmorphism-sm px-20 py-14 flex flex-col items-center">
-          {!profile.image ? (
-            <User2 strokeWidth={1.5} className="h-20 w-20" />
-          ) : (
-            <Image
-              src={profile?.image}
-              alt="Profile Picture"
-              width={120}
-              height={120}
-              priority={true}
-              className="rounded-full"
-            />
-          )}
-          <CardContent className="p-4 mt-5">
-            <h2 className="text-2xl font-bold">{`${profile?.fName ?? ""} ${
-              profile?.lName ?? ""
-            }`}</h2>
-            <h3 className="text-gray-500">{profile.email ?? ""}</h3>
-          </CardContent>
-          {/* {Object.keys(profile).map((p, index) => {
-            return <span key={index}>{p}</span>;
-          })} */}
-        </Card>
+        <div>Please log in to view your profile.</div>
       </section>
-    )
+    );
+  }
+
+  const profileImage = getProfileImage(user);
+  const displayName =
+    user.name || `${user.fName ?? ""} ${user.lName ?? ""}`.trim() || user.email;
+
+  return (
+    <section className="w-full mt-24 flex justify-center items-center flex-col gap-4">
+      <Card className="glassmorphism-sm px-20 py-14 flex flex-col items-center">
+        {!profileImage ? (
+          <User2 strokeWidth={1.5} className="h-20 w-20" />
+        ) : (
+          <Image
+            src={profileImage}
+            alt="Profile Picture"
+            width={120}
+            height={120}
+            priority={true}
+            className="rounded-full aspect-square object-cover"
+          />
+        )}
+        <CardContent className="p-4 mt-5 text-center">
+          <h2 className="text-2xl font-bold">{displayName}</h2>
+          <h3 className="text-gray-500">{user.email ?? ""}</h3>
+        </CardContent>
+      </Card>
+    </section>
   );
 };
 
