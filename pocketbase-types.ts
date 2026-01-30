@@ -96,6 +96,7 @@ export type SuperusersRecord = {
 };
 
 export type AddressRecord = {
+  apt?: string;
   city?: string;
   country?: string;
   created: IsoAutoDateString;

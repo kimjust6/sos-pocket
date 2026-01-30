@@ -30,6 +30,20 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { z } from "zod";
+import {
+  ArrowRight,
+  ArrowLeft,
+  Plus,
+  Trash2,
+  Footprints,
+  Wrench,
+  Tag,
+  Ruler,
+  Camera,
+} from "lucide-react";
+import Spinner from "@/app/common/components/spinner";
+import { cn } from "@/lib/utils";
+
 const emptyShoe: IResoleInfo = {
   size: "",
   manufacturer: "",
@@ -45,6 +59,7 @@ export default function SubmitShoeForm() {
   const [isUploading, setIsUploading] = useState(false);
   const router = useRouter();
   const [shoeAddress, setShoeAddress] = useAtom(addressAtom);
+
   const FormSchema = z.object({
     shoes: z.array(
       z.object({
@@ -72,6 +87,7 @@ export default function SubmitShoeForm() {
     name: "shoes",
     control: form.control,
   });
+
   const onSubmit = async (data: z.infer<typeof FormSchema>) => {
     setIsLoading(true);
     // add the image link to the shoes array
@@ -97,218 +113,236 @@ export default function SubmitShoeForm() {
   }, [JSON.stringify(imgArr)]);
 
   return (
-    <section className="w-full flex justify-center mt-10 px-3 sm:px-0">
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)}>
-          {fields.map((field, index: number) => {
-            return (
-              <section key={field.id}>
-                <FormField
-                  control={form.control}
-                  name={`shoes.${index}.manufacturer`}
-                  render={({ field }) => (
-                    <FormItem className="grid gap-1">
-                      <Select
-                        disabled={isLoading}
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}>
-                        <FormLabel className="sr-only" htmlFor="manufacturer">
-                          Manufacturer*
-                          <FormMessage />
-                        </FormLabel>
-                        <FormControl>
-                          <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Select a Manufacturer*" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectGroup>
-                            <SelectLabel>Select Manufacturer</SelectLabel>
-                            {[
-                              shoeManufacturers.map((manufacturer) => {
-                                return (
-                                  <SelectItem
-                                    key={manufacturer.name}
-                                    value={manufacturer.name}>
-                                    {manufacturer.name}
-                                  </SelectItem>
-                                );
-                              }),
-                            ]}
-                          </SelectGroup>
-                        </SelectContent>
-                      </Select>
-                    </FormItem>
-                  )}
-                />
+    <div className="min-h-screen bg-muted/30 py-12 px-4 sm:px-6">
+      <div className="max-w-3xl mx-auto">
+        <div className="mb-10">
+          <h1 className="text-3xl font-bold tracking-tight text-foreground">
+            Shoe Details
+          </h1>
+          <p className="text-muted-foreground mt-2 text-lg">
+            Tell us about the shoes you're sending in. You can add multiple
+            pairs.
+          </p>
+        </div>
 
-                <FormField
-                  control={form.control}
-                  name={`shoes.${index}.model`}
-                  disabled={isLoading}
-                  render={({ field }) => (
-                    <FormItem className="grid gap-1">
-                      <FormLabel className="sr-only" htmlFor="model">
-                        Shoe Model*
-                        <FormMessage />
-                      </FormLabel>
-                      <FormControl>
-                        <Input
-                          id={`shoes.${index}.model`}
-                          placeholder="Shoe Model*"
-                          type="text"
-                          autoCapitalize="none"
-                          autoComplete="model"
-                          autoCorrect="off"
-                          {...form.register(`shoes.${index}.model` as const, {
-                            required: true,
-                          })}
-                          className={
-                            form.formState.errors?.shoes?.[index]?.model
-                              ? "error"
-                              : ""
-                          }
-                        />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name={`shoes.${index}.size`}
-                  disabled={isLoading}
-                  render={({ field }) => (
-                    <FormItem className="grid gap-1">
-                      <FormLabel className="sr-only" htmlFor="size">
-                        Shoe Size*
-                        <FormMessage />
-                      </FormLabel>
-                      <FormControl>
-                        <Input
-                          id={`shoes.${index}.size`}
-                          placeholder="Shoe Size (EU)"
-                          type="number"
-                          autoCapitalize="none"
-                          autoComplete="size"
-                          autoCorrect="off"
-                          {...field}
-                          {...form.register(`shoes.${index}.size` as const, {
-                            required: true,
-                          })}
-                          className={
-                            form.formState.errors?.shoes?.[index]?.size
-                              ? "error"
-                              : ""
-                          }
-                        />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+            <div className="bg-card border rounded-xl shadow-sm overflow-hidden">
+              {fields.map((field, index) => (
+                <div
+                  key={field.id}
+                  className={cn(index > 0 ? "border-t border-border" : "")}>
+                  <div className="p-6 sm:p-10 space-y-8">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary font-semibold text-sm">
+                          {index + 1}
+                        </div>
+                        <h3 className="text-xl font-semibold tracking-tight">
+                          Shoe Information
+                        </h3>
+                      </div>
 
-                <FormField
-                  control={form.control}
-                  name={`shoes.${index}.serviceType`}
-                  render={({ field }) => (
-                    <FormItem className="grid gap-1">
-                      <Select
-                        disabled={isLoading}
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}>
-                        <FormLabel className="sr-only" htmlFor="serviceType">
-                          Service*
-                          <FormMessage />
-                        </FormLabel>
-                        <FormControl>
-                          <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Select a Service*" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectGroup>
-                            <SelectLabel>Select Service</SelectLabel>
-                            {[
-                              resoleServices.map((serviceType) => {
-                                return (
-                                  <SelectItem
-                                    key={serviceType.name}
-                                    value={serviceType.name}>
-                                    {serviceType.name}
-                                  </SelectItem>
-                                );
-                              }),
-                            ]}
-                          </SelectGroup>
-                        </SelectContent>
-                      </Select>
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name={`shoes.${index}.image`}
-                  disabled={isLoading}
-                  render={({ field }) => (
-                    <FormItem>
-                      {/* <UploadImage /> */}
-                      <SingleImageDropzoneUsage
-                        className="mt-4"
-                        index={index}
+                      {index > 0 && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          type="button"
+                          className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                          onClick={() => {
+                            remove(index);
+                            setImgArr((oldArr: string[]) => {
+                              oldArr.splice(index, 1);
+                              return oldArr;
+                            });
+                          }}>
+                          <Trash2 className="w-4 h-4 mr-2" />
+                          Remove
+                        </Button>
+                      )}
+                    </div>
+
+                    <div className="grid gap-6 sm:grid-cols-2">
+                      <FormField
+                        control={form.control}
+                        name={`shoes.${index}.manufacturer`}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="flex items-center gap-2">
+                              <Tag className="w-4 h-4" />
+                              Manufacturer
+                            </FormLabel>
+                            <Select
+                              disabled={isLoading}
+                              onValueChange={field.onChange}
+                              defaultValue={field.value}>
+                              <FormControl>
+                                <SelectTrigger className="bg-background h-11">
+                                  <SelectValue placeholder="Select manufacturer" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                <SelectGroup>
+                                  {shoeManufacturers.map((manufacturer) => (
+                                    <SelectItem
+                                      key={manufacturer.name}
+                                      value={manufacturer.name}>
+                                      {manufacturer.name}
+                                    </SelectItem>
+                                  ))}
+                                </SelectGroup>
+                              </SelectContent>
+                            </Select>
+                            <FormMessage />
+                          </FormItem>
+                        )}
                       />
-                    </FormItem>
-                  )}
-                />
 
-                {index > 0 && (
-                  <div className="w-full flex justify-center">
-                    <Button
-                      variant="destructive"
-                      type="button"
-                      className="mt-5 w-full md:w-auto"
-                      onClick={() => {
-                        remove(index);
-                        setImgArr((oldArr: string[]) => {
-                          oldArr.splice(index, 1);
-                          return oldArr;
-                        });
-                      }}>
-                      Remove Shoe
-                    </Button>
+                      <FormField
+                        control={form.control}
+                        name={`shoes.${index}.model`}
+                        disabled={isLoading}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="flex items-center gap-2">
+                              <Footprints className="w-4 h-4" />
+                              Model
+                            </FormLabel>
+                            <FormControl>
+                              <Input
+                                {...field}
+                                placeholder="e.g. Solution Comp"
+                                className="bg-background h-11"
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+
+                    <div className="grid gap-6 sm:grid-cols-2">
+                      <FormField
+                        control={form.control}
+                        name={`shoes.${index}.size`}
+                        disabled={isLoading}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="flex items-center gap-2">
+                              <Ruler className="w-4 h-4" />
+                              Size (EU)
+                            </FormLabel>
+                            <FormControl>
+                              <Input
+                                {...field}
+                                type="number"
+                                placeholder="e.g. 42"
+                                className="bg-background h-11"
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name={`shoes.${index}.serviceType`}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="flex items-center gap-2">
+                              <Wrench className="w-4 h-4" />
+                              Service
+                            </FormLabel>
+                            <Select
+                              disabled={isLoading}
+                              onValueChange={field.onChange}
+                              defaultValue={field.value}>
+                              <FormControl>
+                                <SelectTrigger className="bg-background h-11">
+                                  <SelectValue placeholder="Select service type" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                <SelectGroup>
+                                  {resoleServices.map((serviceType) => (
+                                    <SelectItem
+                                      key={serviceType.name}
+                                      value={serviceType.name}>
+                                      {serviceType.name}
+                                    </SelectItem>
+                                  ))}
+                                </SelectGroup>
+                              </SelectContent>
+                            </Select>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+
+                    <FormField
+                      control={form.control}
+                      name={`shoes.${index}.image`}
+                      disabled={isLoading}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="flex items-center gap-2">
+                            <Camera className="w-4 h-4" />
+                            Photo
+                          </FormLabel>
+                          <div className="bg-background border rounded-lg p-2">
+                            <SingleImageDropzoneUsage
+                              className="mt-0"
+                              index={index}
+                            />
+                          </div>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                   </div>
-                )}
-                <Separator className="mt-5 mb-3" />
-              </section>
-            );
-          })}
+                </div>
+              ))}
 
-          <div className="mt-5 flex md:justify-around gap-3 flex-wrap">
-            <Button
-              variant="outline"
-              type="button"
-              className="mr-0 md:mr-8 w-full md:w-auto mb-3 md:mb-0"
-              onClick={() => {
-                router.push("/resole-form");
-              }}>
-              Back
-            </Button>
-            <Button
-              variant="secondary"
-              type="button"
-              className="w-full md:w-auto"
-              onClick={() => {
-                append(emptyShoe as any);
-              }}>
-              Add Another Shoe
-            </Button>
-            <Button
-              className="w-full md:w-auto"
-              type="submit"
-              disabled={isLoading || isUploading}>
-              Submit Order
-            </Button>
-          </div>
-        </form>
-      </Form>
-    </section>
+              <div className="bg-muted/30 p-4 border-t flex justify-center">
+                <Button
+                  variant="outline"
+                  type="button"
+                  onClick={() => append(emptyShoe as any)}
+                  className="w-full sm:w-auto border-dashed">
+                  <Plus className="w-4 h-4 mr-2" />
+                  Add Another Pair
+                </Button>
+              </div>
+            </div>
+
+            <div className="flex flex-col-reverse sm:flex-row gap-3">
+              <Button
+                variant="outline"
+                type="button"
+                className="flex-1 h-12"
+                onClick={() => router.push("/resole-form")}>
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Back
+              </Button>
+              <Button
+                type="submit"
+                className="flex-1 h-12 text-base"
+                disabled={isLoading || isUploading}>
+                {isLoading ? (
+                  <Spinner className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  <>
+                    Submit Order
+                    <ArrowRight className="w-4 h-4 ml-2" />
+                  </>
+                )}
+              </Button>
+            </div>
+          </form>
+        </Form>
+      </div>
+    </div>
   );
 }
