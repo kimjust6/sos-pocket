@@ -1,0 +1,187 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 0 0% 3.9%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 3.9%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 3.9%;
+
+    --primary: 0 0% 9%;
+    --primary-foreground: 0 0% 98%;
+
+    --secondary: 0 0% 96.1%;
+    --secondary-foreground: 0 0% 9%;
+
+    --muted: 0 0% 96.1%;
+    --muted-foreground: 0 0% 45.1%;
+
+    --accent: 0 0% 96.1%;
+    --accent-foreground: 0 0% 9%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 0 0% 89.8%;
+    --input: 0 0% 89.8%;
+    --ring: 0 0% 3.9%;
+
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 0 0% 3.9%;
+    --foreground: 0 0% 98%;
+
+    --card: 0 0% 3.9%;
+    --card-foreground: 0 0% 98%;
+
+    --popover: 0 0% 3.9%;
+    --popover-foreground: 0 0% 98%;
+
+    --primary: 0 0% 98%;
+    --primary-foreground: 0 0% 9%;
+
+    --secondary: 0 0% 14.9%;
+    --secondary-foreground: 0 0% 98%;
+
+    --muted: 0 0% 14.9%;
+    --muted-foreground: 0 0% 63.9%;
+
+    --accent: 0 0% 14.9%;
+    --accent-foreground: 0 0% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 0 0% 14.9%;
+    --input: 0 0% 14.9%;
+    --ring: 0 0% 83.1%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* legacy styles */
+body {
+  background-image: linear-gradient(to right, #dbd1c6, #b4aea8);
+}
+
+.button_primary {
+  @apply select-none rounded-md flex justify-center items-center gap-3  outline outline-1 outline-zinc-500
+  bg-zinc-100 text-zinc-900 px-4 py-2  sm:w-fit w-44 border border-zinc-400 hover:bg-zinc-200 
+  hover:text-zinc-800 transition-all
+  cursor-pointer 
+  /* disabled:bg-zinc-800 disabled:cursor-default disabled:opacity-70 dark:bg-yellow-200
+  dark:text-gray-950 dark:shadow-none dark:border-gray-100 dark:hover:bg-zinc-800; */;
+}
+
+.button_secondary {
+  @apply select-none rounded-md flex justify-center items-center gap-3  outline-1 outline
+  bg-zinc-800 text-zinc-50 px-4 py-2   sm:w-fit w-44  border-zinc-100 hover:bg-zinc-700 
+  cursor-pointer hover:text-zinc-200 transition-all
+  /* disabled:bg-zinc-800 disabled:cursor-default disabled:opacity-70 dark:bg-yellow-200
+  dark:text-gray-950 dark:shadow-none dark:border-gray-100 dark:hover:bg-yellow-300; */;
+}
+
+.button_accent {
+  @apply select-none rounded-md flex justify-center items-center gap-3 outline outline-1
+bg-violet-500 text-zinc-50 px-4 py-2   sm:w-fit w-44 border border-zinc-400 hover:bg-violet-600 
+cursor-pointer disabled:bg-zinc-800 disabled:cursor-default 
+/* disabled:opacity-70 dark:bg-yellow-200
+dark:text-gray-950 dark:shadow-none dark:border-gray-100 dark:hover:bg-yellow-300;*/;
+}
+
+.button_warn {
+  @apply select-none rounded-md flex justify-center items-center gap-3 outline outline-1
+bg-red-500 text-zinc-50 px-4 py-2   sm:w-fit w-44 border border-zinc-400 hover:bg-red-600 
+cursor-pointer disabled:bg-zinc-800 disabled:cursor-default 
+/* disabled:opacity-70 dark:bg-yellow-200
+dark:text-gray-950 dark:shadow-none dark:border-gray-100 dark:hover:bg-yellow-300;*/;
+}
+
+.button_icon {
+  @apply p-2 mt-2 ml-3 text-sm rounded-md focus:outline-none focus:ring-2 
+    text-zinc-100 hover:bg-zinc-700;
+}
+
+.glassmorphism-sm {
+  @apply bg-stone-400 rounded-md bg-clip-padding backdrop-filter backdrop-blur-sm bg-opacity-80 border border-stone-100;
+}
+
+.glassmorphism-md {
+  @apply bg-stone-400 rounded-md bg-clip-padding backdrop-filter backdrop-blur-md bg-opacity-70 border border-stone-100;
+}
+
+.glassmorphism-lg {
+  @apply lg:bg-stone-400 bg-gray-300 rounded-md bg-clip-padding backdrop-filter backdrop-blur-sm bg-opacity-60 border border-stone-100;
+}
+
+.card {
+  @apply block max-w-md p-6 bg-stone-50 border border-zinc-200 rounded-md shadow hover:bg-stone-100 
+                    hover:opacity-80 cursor-pointer mx-2 sm:mx-4;
+}
+
+.button_basic_accent {
+  @apply w-full justify-center rounded-md px-3 py-2 text-sm font-semibold text-white shadow-sm  sm:ml-3 sm:w-auto;
+}
+
+.button_basic {
+  @apply inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold 
+    text-stone-900 shadow-sm ring-1 ring-inset ring-stone-300 hover:bg-stone-100 sm:mt-0 sm:w-auto outline-1 outline-stone-50;
+}
+
+/* card styling */
+/* buttons in  cards*/
+.button_basic_accent {
+  background-color: var(--color-accent);
+}
+.button_basic_accent:hover {
+  background-color: var(--color-accent-dark);
+}
+
+.card_title {
+  @apply mb-2 text-xl font-bold tracking-tight text-stone-800;
+}
+
+.card_label {
+  @apply text-stone-600 font-semibold;
+}
+
+.card_text {
+  @apply text-zinc-400 font-normal;
+}
+/* card styling end */
+
+.form_field {
+  @apply sm:px-3 px-2 block w-full rounded-md border-[1px] border-zinc-500 py-1.5 text-zinc-900 ring-1 ring-inset ring-zinc-300 
+    placeholder:text-zinc-400 sm:text-sm sm:leading-6 focus:ring-0 focus:border-transparent -mb-3 mt-1;
+}
+
+.field_error_message {
+  @apply text-red-500 text-[0.75rem] font-medium p-0 -mt-3 mb-1 ml-1;
+}
+.field_name {
+  @apply text-[0.75rem] font-medium p-0 -mt-3 mb-1 ml-1;
+}
+
+.header_text {
+  @apply p-4 font-bold text-3xl;
+}
+
+.form_input {
+  @apply outline outline-1 p-2 rounded-sm outline-zinc-200 w-full;
+}

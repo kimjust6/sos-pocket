@@ -1,0 +1,25 @@
+version: "1"
+services:
+  frontend:
+    restart: always
+    init:
+      true
+      # Build the Docker Image using the Dockerfile
+      # and current directory as the build context
+    image: sos-frontend:${TAG}
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - API_BASE_URL=${API_BASE_URL}
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+      - DISCORD_CLIENT_ID=${DISCORD_CLIENT_ID}
+      - DISCORD_CLIENT_SECRET=${DISCORD_CLIENT_SECRET}
+      - NEXTAUTH_URL=${NEXTAUTH_URL}
+      - JWT_PUBLIC_KEY=${JWT_PUBLIC_KEY}
+      - PAYPAL_CLIENT_ID=${PAYPAL_CLIENT_ID}
+      - PAYPAL_CLIENT_SECRET=${PAYPAL_CLIENT_SECRET}
+      - X_AUTH_TOKEN=${X_AUTH_TOKEN}
