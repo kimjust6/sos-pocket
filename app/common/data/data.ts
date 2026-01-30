@@ -32,7 +32,7 @@ export const navbarItemsUser = [
 
 // left side bar (admin)
 export const adminSidebarItems = [
-  { name: "Home", link: "/home", icon: React.createElement(AiFillHome) },
+  { name: "Store", link: "/store", icon: React.createElement(AiFillHome) },
   {
     name: "Dashboard",
     link: "/admin/dashboard",
@@ -52,7 +52,7 @@ export const adminSidebarItems = [
 
 // left side bar (user)
 export const userSidebarItems = [
-  { name: "Home", link: "/home", icon: React.createElement(AiFillHome) },
+  { name: "Store", link: "/store", icon: React.createElement(AiFillHome) },
   { name: "Profile", link: "/profile", icon: React.createElement(FaUser) },
   {
     name: "My Orders",
@@ -67,7 +67,7 @@ export const userSidebarItems = [
 ];
 // left side bar (user)
 export const guestSidebarItems = [
-  { name: "Home", link: "/home", icon: React.createElement(AiFillHome) },
+  { name: "Store", link: "/store", icon: React.createElement(AiFillHome) },
   {
     name: "Login",
     link: "/auth/login",
