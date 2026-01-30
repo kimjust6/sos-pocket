@@ -1,8 +1,10 @@
 "use client";
 
-import { useSession } from "next-auth/react";
+import {
+  getCurrentUser,
+  onAuthStateChange,
+} from "@/app/common/services/pocketbase.service";
 import { useEffect, useState } from "react";
-import OrderCard from "@/app/common/components/orderCard";
 import Spinner from "@/app/common/components/spinner";
 import {
   getMultiShoesByOrder,
@@ -13,22 +15,24 @@ import { IResoleOrdersDB } from "@/app/common/data/interfaces";
 
 const Orders = () => {
   const [orders, setOrders] = useState<any>(null);
-  const { data: session, status } = useSession();
+  const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(true);
-  const getShoeOrders = async () => {
+
+  const getShoeOrders = async (u: any) => {
+    if (!u?.email) return;
     setLoading(true);
     var ordersData = null;
     var shoesData = null;
     // get user orders
-    const u = session?.user as any;
     try {
       const response = await getUserResoleOrders(
-        u?.email as string,
-        u?.provider as string
+        u.email as string,
+        "pocketbase" // or adjust based on your API
       );
       ordersData = response?.data;
     } catch (error) {
       console.error(error);
+      setLoading(false);
       return;
     }
     // get shoe orders
@@ -37,6 +41,7 @@ const Orders = () => {
       shoesData?.data ? (shoesData = shoesData?.data) : "";
     } catch (error) {
       console.error(error);
+      setLoading(false);
       return;
     }
     // combine shoes and orders
@@ -54,16 +59,31 @@ const Orders = () => {
     for (var key in ordersObject) {
       ordersArray.push(ordersObject[key]);
     }
-    // setOrders(JSON.stringify(ordersArray));
     setOrders(ordersArray);
     setLoading(false);
   };
 
   useEffect(() => {
-    if (session?.user?.email) {
-      getShoeOrders();
+    // Initial check
+    const currentUser = getCurrentUser();
+    setUser(currentUser);
+    if (currentUser?.email) {
+      getShoeOrders(currentUser);
     }
-  }, [status]);
+
+    // Subscribe to auth changes
+    const unsubscribe = onAuthStateChange((token, record) => {
+      setUser(record);
+      if (record?.email) {
+        getShoeOrders(record);
+      }
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, []);
+
   return (
     <section className="w-full flex flex-col items-center">
       <h1 className="header_text">My Orders</h1>
@@ -81,8 +101,6 @@ const Orders = () => {
         ) : (
           <h1 className="text-2xl">No Orders</h1>
         )}
-
-        {/* <OrderCard resoleOrders={orders} /> */}
       </div>
     </section>
   );

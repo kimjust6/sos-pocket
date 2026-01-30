@@ -90,6 +90,7 @@ export async function loginWithEmail(email: string, password: string) {
           password,
           passwordConfirm: password,
           emailVisibility: true,
+          role: "user",
         });
         // Now login with the new account
         const authData = await client
@@ -166,6 +167,7 @@ export async function loginWithGoogle() {
       provider: "google",
       createData: {
         emailVisibility: true,
+        role: "user",
       },
     });
     setAuthCookie(client.authStore.token, client.authStore.model);
@@ -204,6 +206,7 @@ export async function registerWithEmail(
       password,
       passwordConfirm,
       emailVisibility: true,
+      role: "user",
       ...additionalData,
     });
 

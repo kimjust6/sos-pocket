@@ -1,7 +1,7 @@
 "use client";
 
 import { useAtom } from "jotai";
-import { signOut } from "next-auth/react";
+
 import { useRouter } from "next/navigation";
 import { tosModalAtom } from "@/app/common/atoms/atoms";
 

@@ -26,7 +26,10 @@ import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useAtom } from "jotai";
-import { useSession } from "next-auth/react";
+import {
+  getCurrentUser,
+  onAuthStateChange,
+} from "@/app/common/services/pocketbase.service";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -35,7 +38,7 @@ import { z } from "zod";
 interface ResoleFormProps extends React.HTMLAttributes<HTMLDivElement> {}
 
 export function ResoleForm({ className, ...props }: ResoleFormProps) {
-  const { data: session, status } = useSession();
+  const [user, setUser] = useState<any>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [address, setAddress] = useAtom(addressAtom);
   const router = useRouter();
@@ -88,10 +91,25 @@ export function ResoleForm({ className, ...props }: ResoleFormProps) {
   });
 
   useEffect(() => {
-    if (session?.user?.email) {
-      form.setValue("email", session?.user?.email, { shouldDirty: true });
+    // Initial check
+    const currentUser = getCurrentUser();
+    setUser(currentUser);
+    if (currentUser?.email) {
+      form.setValue("email", currentUser.email, { shouldDirty: true });
     }
-  }, [status]);
+
+    // Subscribe to auth changes
+    const unsubscribe = onAuthStateChange((token, record) => {
+      setUser(record);
+      if (record?.email) {
+        form.setValue("email", record.email, { shouldDirty: true });
+      }
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, [form]);
 
   return (
     <section className={cn("grid gap-6", className)} {...props}>
@@ -120,7 +138,7 @@ export function ResoleForm({ className, ...props }: ResoleFormProps) {
                       autoCapitalize="none"
                       autoComplete="email"
                       autoCorrect="off"
-                      disabled={session?.user ? true : false}
+                      disabled={user ? true : false}
                     />
                   </FormControl>
                 </FormItem>
