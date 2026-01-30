@@ -15,11 +15,10 @@ import { Separator } from "@/components/ui/separator";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 
-interface orderProps {
-  params: { orderID: string };
-}
+import { useParams } from "next/navigation";
 
-const OrderDetails = ({ params }: orderProps) => {
+const OrderDetails = () => {
+  const params = useParams<{ orderID: string }>();
   const [shippingInfo, setShippingInfo] = useState(sampleResoleOrders);
   const [shoeInfo, setShoeInfo] = useState([sampleResoleShoes]);
   const [isLoading, setIsLoading] = useState(true);

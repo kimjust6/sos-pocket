@@ -1,7 +1,6 @@
 "use server";
 
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import { getServerSession } from "next-auth/next";
+import { auth } from "@/auth";
 import {
   IAddress,
   IResoleInfo,
@@ -17,7 +16,7 @@ const BASE_URL = process.env.API_BASE_URL + "api/v1/";
  */
 export async function getAllResoleOrders(page: number, limit: number) {
   // get user session and check if you can post
-  const session: any = await getServerSession(authOptions);
+  const session: any = await auth();
   // api call to node.js backend from next.js server side
   try {
     const response = await fetch(
@@ -46,7 +45,7 @@ export async function getAllResoleOrders(page: number, limit: number) {
 
 export async function getUserResoleOrders(email: string, provider: string) {
   // get user session and check if you can post
-  const session: any = await getServerSession(authOptions);
+  const session: any = await auth();
   // api call to node.js backend from next.js server side
   try {
     const response = await fetch(
@@ -78,7 +77,7 @@ export async function getUserResoleOrdersByID(
   orderID: string
 ): Promise<{ status: string; data: IResoleOrdersDB } | null> {
   // get user session and check if you can post
-  const session: any = await getServerSession(authOptions);
+  const session: any = await auth();
   // api call to node.js backend from next.js server side
   try {
     const response = await fetch(`${BASE_URL}resole-order/${orderID}`, {
@@ -105,7 +104,7 @@ export async function getUserResoleOrdersByID(
  * @returns an array of shoe objects (the shoes that were in each order)
  */
 export async function getMultiShoesByOrder(orders: any[]) {
-  const session: any = await getServerSession(authOptions);
+  const session: any = await auth();
 
   let shoeIds = [];
   // get all shoe ids from orders and put them into an array shoeIds
@@ -148,7 +147,7 @@ export async function postResoleOrder(
   shoeAddress: IAddress,
   shoes: IResoleInfo[]
 ) {
-  const session: any = await getServerSession(authOptions);
+  const session: any = await auth();
 
   let orderTime = new Date();
   let order: IResoleOrdersDB = {

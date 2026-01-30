@@ -1,7 +1,5 @@
 "use server";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import { GetServerSidePropsContext } from "next";
-import { getServerSession } from "next-auth/next";
+
 import { getProviders } from "next-auth/react";
 import { IUsersDB } from "@/app/common/data/interfaces";
 

@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { getServerSession } from "next-auth";
+import { auth } from "@/auth";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/card";
 
 export default async function Home() {
-  const session = await getServerSession();
+  const session = await auth();
 
   return (
     <section className="h-[calc(100vh-4em)] w-full object-scale-down flex justify-center items-center px-4">
