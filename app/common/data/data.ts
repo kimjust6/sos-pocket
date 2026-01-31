@@ -12,7 +12,7 @@ import { TbSquareRoundedPlusFilled } from "react-icons/tb";
 export const navbarItemsGuest = [
   // {
   //   name: "Login",
-  //   link: "/profile",
+  //   link: "/account",
   //   key: "0619108817",
   // },
   // {
@@ -53,7 +53,7 @@ export const adminSidebarItems = [
 // left side bar (user)
 export const userSidebarItems = [
   { name: "Store", link: "/store", icon: React.createElement(AiFillHome) },
-  { name: "Profile", link: "/profile", icon: React.createElement(FaUser) },
+  { name: "Account", link: "/account", icon: React.createElement(FaUser) },
   {
     name: "My Orders",
     link: "/orders",

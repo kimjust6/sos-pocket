@@ -56,7 +56,7 @@ export default function AuthCallback() {
           title: "Welcome!",
           description: "You have successfully signed in with Google.",
         });
-        router.push("/profile");
+        router.push("/account");
       } else {
         setError(result.error || "Authentication failed");
       }

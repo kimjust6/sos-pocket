@@ -111,7 +111,7 @@ const HeaderOptions = () => {
             <DropdownMenuItem
               className="cursor-pointer"
               onClick={() => {
-                router.push("/profile");
+                router.push("/account");
               }}>
               <User2 strokeWidth={1.5} className="h-4 w-4" />
               <span className="mx-3">Profile</span>

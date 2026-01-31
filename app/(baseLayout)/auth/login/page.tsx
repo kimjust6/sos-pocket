@@ -86,7 +86,7 @@ export function LoginForm({ className, ...props }: LoginFormProps) {
           title: "Welcome!",
           description: "You have successfully signed in with Google.",
         });
-        router.push("/profile");
+        router.push("/account");
       } else {
         toast({
           title: "Uh oh! Something went wrong.",
@@ -116,7 +116,7 @@ export function LoginForm({ className, ...props }: LoginFormProps) {
           title: "Welcome!",
           description: "You have successfully signed in.",
         });
-        router.push("/profile");
+        router.push("/account");
       } else {
         toast({
           title: "Uh oh! Something went wrong.",
@@ -233,7 +233,7 @@ const Login = () => {
     // Check if already authenticated (only on client-side)
     try {
       if (isAuthenticated() && getCurrentUser()) {
-        router.push("/profile");
+        router.push("/account");
         return;
       }
     } catch (e) {
@@ -244,7 +244,7 @@ const Login = () => {
     // Subscribe to auth state changes
     const unsubscribe = onAuthStateChange((token, record) => {
       if (token && record) {
-        router.push("/profile");
+        router.push("/account");
       }
     });
 

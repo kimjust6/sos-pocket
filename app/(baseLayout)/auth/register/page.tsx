@@ -106,7 +106,7 @@ export function RegisterForm({ className, ...props }: RegisterFormProps) {
           title: "Welcome!",
           description: "You have successfully signed in with Google.",
         });
-        router.push("/profile");
+        router.push("/account");
       } else {
         toast({
           title: "Uh oh! Something went wrong.",
@@ -153,7 +153,7 @@ export function RegisterForm({ className, ...props }: RegisterFormProps) {
           title: "Welcome to SOS!",
           description: "Your account has been created successfully.",
         });
-        router.push("/profile");
+        router.push("/account");
       } else {
         toast({
           title: "Uh oh! Something went wrong.",
@@ -320,7 +320,7 @@ const Register = () => {
     // Check if already authenticated (only on client-side)
     try {
       if (isAuthenticated() && getCurrentUser()) {
-        router.push("/profile");
+        router.push("/account");
         return;
       }
     } catch (e) {
@@ -331,7 +331,7 @@ const Register = () => {
     // Subscribe to auth state changes
     const unsubscribe = onAuthStateChange((token, record) => {
       if (token && record) {
-        router.push("/profile");
+        router.push("/account");
       }
     });
 

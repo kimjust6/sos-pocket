@@ -20,7 +20,7 @@ export async function middleware(request: NextRequest) {
 
   // Protected routes
   if (
-    nextUrl.pathname.startsWith("/profile") ||
+    nextUrl.pathname.startsWith("/account") ||
     nextUrl.pathname.startsWith("/orders")
   ) {
     if (!isLoggedIn) {
@@ -51,5 +51,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/admin/:path*", "/profile/:path*", "/orders/:path*"],
+  matcher: ["/admin/:path*", "/account/:path*", "/orders/:path*"],
 };
