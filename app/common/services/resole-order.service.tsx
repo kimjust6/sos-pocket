@@ -26,8 +26,30 @@ export async function getAllResoleOrders(page: number, limit: number) {
   }
 }
 
+import { cookies } from "next/headers";
+import PocketBase from "pocketbase";
+
 export async function getUserOrders(userId: string, provider: string) {
-  const pb = getPocketBase();
+  // Create a new instance per request to avoid singleton state issues on server
+  const pb = new PocketBase(
+    process.env.NEXT_PUBLIC_POCKETBASE_URL || "https://sos-be.jkim.win"
+  );
+
+  const cookieStore = await cookies();
+  const authCookie = cookieStore.get("pb_auth");
+
+  if (authCookie) {
+    pb.authStore.loadFromCookie(`pb_auth=${authCookie.value}`);
+  }
+
+  // Debug to confirm auth state on server
+  console.log(
+    "Server PB Auth Valid?",
+    pb.authStore.isValid,
+    "User:",
+    pb.authStore.model?.id
+  );
+
   try {
     // Filter by user relation ID
     const result = await pb.collection(Collections.Orders).getList(1, 50, {

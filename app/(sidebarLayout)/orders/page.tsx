@@ -28,6 +28,10 @@ const Orders = () => {
   // ... (keep getShoeOrders logic same as before) ...
   const getShoeOrders = async (u: any) => {
     if (!u?.email) return;
+
+    // DEBUG: This ID corresponds to @request.auth.id in PocketBase rules
+    console.log("Current User ID (@request.auth.id):", u.id);
+
     setLoading(true);
 
     try {
@@ -56,6 +60,7 @@ const Orders = () => {
           country: order.country || shipping?.country || "Canada",
         };
 
+        console.log("processed order", order.user);
         return {
           ...order,
           ...addressData,
