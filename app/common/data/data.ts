@@ -1,5 +1,5 @@
 import React from "react";
-import { AiFillHome } from "react-icons/ai";
+import { AiFillHome, AiOutlineShoppingCart } from "react-icons/ai";
 import { BsFillBagFill } from "react-icons/bs";
 import { FaUser } from "react-icons/fa";
 import { GiConverseShoe } from "react-icons/gi";
@@ -63,6 +63,11 @@ export const userSidebarItems = [
     name: "New Resole",
     link: "/resole-form",
     icon: React.createElement(TbSquareRoundedPlusFilled),
+  },
+  {
+    name: "Cart",
+    link: "/cart",
+    icon: React.createElement(AiOutlineShoppingCart),
   },
 ];
 // left side bar (user)

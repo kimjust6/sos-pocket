@@ -57,7 +57,7 @@ export default function OrderCard2({ resoleOrders }: orderProps) {
         className="w-full sm:hidden"
         shoes={resoleOrders.shoes}></MyImage>
       <CardHeader>
-        <CardTitle>Order: #{resoleOrders._id?.slice(-8)} </CardTitle>
+        <CardTitle>Order: #{resoleOrders.id?.slice(-8)} </CardTitle>
         <CardDescription>
           <span className=" font-semibold">Status: </span>
           {resoleOrders.status}
@@ -105,7 +105,7 @@ export default function OrderCard2({ resoleOrders }: orderProps) {
         </>
       </CardContent>
       <CardFooter>
-        <Link href={`/orders/${resoleOrders._id}`} className="w-full">
+        <Link href={`/orders/${resoleOrders.id}`} className="w-full">
           <Button type="button" className="w-full">
             View Details
           </Button>

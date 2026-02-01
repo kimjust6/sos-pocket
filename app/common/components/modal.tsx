@@ -30,7 +30,7 @@ const Modal = ({ resoleOrder }: any) => {
                   <div className="card_text">
                     <p className="">
                       <span className="card_label">Order No:</span>{" "}
-                      {resoleOrder._id.slice(-8)}
+                      {resoleOrder.id.slice(-8)}
                     </p>
                     <p className="card_label">
                       Status:{" "}

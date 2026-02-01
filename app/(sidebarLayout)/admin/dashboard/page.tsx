@@ -4,10 +4,7 @@ import { dashboardAtom } from "@/app/common/atoms/atoms";
 import OrderTable from "@/app/common/components/orderTable";
 import OrderCard from "@/app/common/components/orderCard";
 import Spinner from "@/app/common/components/spinner";
-import {
-  getAllResoleOrders,
-  getMultiShoesByOrder,
-} from "@/app/common/services/resole-order.service";
+import { getAllResoleOrders } from "@/app/common/services/resole-order.service";
 import { useAtom } from "jotai";
 
 import { useEffect, useState } from "react";
@@ -21,47 +18,35 @@ const AdminDashboard = () => {
   // helper function
   const getShoeOrders = async () => {
     setLoading(true);
-    var ordersData = null;
-    var shoesData = null;
-    // get all orders
+
     try {
       const response = await getAllResoleOrders(page, 10);
-      ordersData = response?.data;
+      const ordersData = response?.items || [];
+
+      // Map expanded shoes to the 'shoes' property for the UI
+      const processedOrders = ordersData.map((order: any) => {
+        const expandedShoes = order.expand?.shoes;
+        let shoes: any[] = [];
+        if (expandedShoes) {
+          shoes = Array.isArray(expandedShoes)
+            ? expandedShoes
+            : [expandedShoes];
+        }
+        return {
+          ...order,
+          shoes: shoes,
+        };
+      });
+
+      setOrders((oldOrders: any) => {
+        // Prevent duplicates if needed, or just append
+        return [...oldOrders, ...processedOrders];
+      });
     } catch (error) {
       console.error(error);
-      return;
+    } finally {
+      setLoading(false);
     }
-    // get shoe orders
-    try {
-      shoesData = await getMultiShoesByOrder(ordersData);
-      shoesData?.data ? (shoesData = shoesData?.data) : "";
-    } catch (error) {
-      console.error(error);
-      return;
-    }
-    // combine shoes and orders
-    let ordersObject: any = {};
-    for (var i = 0; i < ordersData?.length; i++) {
-      const id = ordersData[i].id || ordersData[i]._id;
-      ordersObject[id] = ordersData[i];
-      ordersObject[id].shoes = [];
-    }
-    // add shoes to orders
-    for (var i = 0; i < shoesData?.length; i++) {
-      const orderId = shoesData[i].order_id || shoesData[i].orderId;
-      if (ordersObject[orderId]) {
-        ordersObject[orderId].shoes.push(shoesData[i]);
-      }
-    }
-    // convert ordersObject to array
-    let ordersArray: any = [];
-    for (var key in ordersObject) {
-      ordersArray.push(ordersObject[key]);
-    }
-    setOrders((oldOrders: any) => {
-      return [...oldOrders, ...ordersArray];
-    });
-    setLoading(false);
   };
   useEffect(() => {
     getShoeOrders();

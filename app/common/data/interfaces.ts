@@ -73,8 +73,7 @@ export const sampleResoleShoes: IResoleShoesDB = {
 };
 
 export interface IResoleOrdersDB {
-  id?: string;
-  _id?: string; // Keep for backward compatibility if needed, but prefer id
+  id: string; // PocketBase uses string IDs (15 chars)
   first_name: string;
   last_name: string;
   email: string;
@@ -86,16 +85,18 @@ export interface IResoleOrdersDB {
   country: string;
   phone: string;
   status: string;
-  shoes: IResoleShoesDB[] | string[]; //array of ids
+  shoes: any[]; // Changed to any[] to accommodate expanded records or IDs. Ideally should be ResoleShoesResponse[]
   created: string; // Changed to string to match IsoDateString
   updated: string; // Changed to string to match IsoDateString
   subtotals: number[];
   delivery_type: string;
+  expand?: any; // PocketBase expansion
 }
 
 // this is strictly to iterate over the keys of the interface object when checking for puts
 // this is strictly to iterate over the keys of the interface object when checking for puts
 export const sampleResoleOrders: IResoleOrdersDB = {
+  id: "",
   first_name: "",
   last_name: "",
   email: "",

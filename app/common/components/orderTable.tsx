@@ -38,9 +38,9 @@ const OrderTable = ({ resoleOrders }: any) => {
                       "border-b cursor-pointer hover:bg-stone-50  hover:opacity-70 " +
                       (index % 2 === 0 ? " bg-white " : " bg-zinc-100 ")
                     }
-                    key={order._id}>
+                    key={order.id}>
                     <td className="px-6 py-4 uppercase">
-                      {order._id.slice(-8)}
+                      {order.id.slice(-8)}
                     </td>
                     <th
                       scope="row"
