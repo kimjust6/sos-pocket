@@ -15,6 +15,7 @@ export enum Collections {
   Brands = "brands",
   CartItem = "cart_item",
   Categories = "categories",
+  LoginTracker = "login_tracker",
   OrderItems = "order_items",
   Orders = "orders",
   ProductVariants = "product_variants",
@@ -107,19 +108,20 @@ export enum AddressesTypeOptions {
   "shipping" = "shipping",
 }
 export type AddressesRecord = {
-  apt?: string;
   city?: string;
   country?: string;
   created: IsoAutoDateString;
   first_name?: string;
   id: string;
   last_name?: string;
-  phone?: number;
+  phone?: string;
   postal_code?: string;
   province?: string;
-  street_address?: string;
+  street_line1?: string;
+  street_line2?: string;
   type?: AddressesTypeOptions;
   updated: IsoAutoDateString;
+  user?: RecordIdString;
 };
 
 export type BrandsRecord = {
@@ -151,6 +153,15 @@ export type CategoriesRecord = {
   name?: string;
   sort_order?: number;
   updated: IsoAutoDateString;
+};
+
+export type LoginTrackerRecord = {
+  created: IsoAutoDateString;
+  id: string;
+  ip?: string;
+  is_success?: boolean;
+  updated: IsoAutoDateString;
+  user?: RecordIdString;
 };
 
 export type OrderItemsRecord = {
@@ -257,7 +268,7 @@ export type UsersRecord = {
   id: string;
   name?: string;
   password: string;
-  phone?: number;
+  phone?: string;
   role?: UsersRoleOptions;
   toc_accepted?: boolean;
   tokenKey: string;
@@ -284,6 +295,8 @@ export type CartItemResponse<Texpand = unknown> = Required<CartItemRecord> &
   BaseSystemFields<Texpand>;
 export type CategoriesResponse<Texpand = unknown> = Required<CategoriesRecord> &
   BaseSystemFields<Texpand>;
+export type LoginTrackerResponse<Texpand = unknown> =
+  Required<LoginTrackerRecord> & BaseSystemFields<Texpand>;
 export type OrderItemsResponse<Texpand = unknown> = Required<OrderItemsRecord> &
   BaseSystemFields<Texpand>;
 export type OrdersResponse<
@@ -313,6 +326,7 @@ export type CollectionRecords = {
   brands: BrandsRecord;
   cart_item: CartItemRecord;
   categories: CategoriesRecord;
+  login_tracker: LoginTrackerRecord;
   order_items: OrderItemsRecord;
   orders: OrdersRecord;
   product_variants: ProductVariantsRecord;
@@ -332,6 +346,7 @@ export type CollectionResponses = {
   brands: BrandsResponse;
   cart_item: CartItemResponse;
   categories: CategoriesResponse;
+  login_tracker: LoginTrackerResponse;
   order_items: OrderItemsResponse;
   orders: OrdersResponse;
   product_variants: ProductVariantsResponse;
