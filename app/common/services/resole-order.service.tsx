@@ -69,10 +69,21 @@ export async function getUserOrders(userId: string, provider: string) {
  * @param orderID the id of the order being requested
  */
 export async function getUserResoleOrdersByID(orderID: string): Promise<any> {
-  const pb = getPocketBase();
+  // Create a new instance per request to avoid singleton state issues on server
+  const pb = new PocketBase(
+    process.env.NEXT_PUBLIC_POCKETBASE_URL || "https://sos-be.jkim.win"
+  );
+
+  const cookieStore = await cookies();
+  const authCookie = cookieStore.get("pb_auth");
+
+  if (authCookie) {
+    pb.authStore.loadFromCookie(`pb_auth=${authCookie.value}`);
+  }
+
   try {
     const record = await pb.collection(Collections.Orders).getOne(orderID, {
-      expand: "shoes",
+      expand: "shoes,shipping_address,order_items(order)",
     });
     return { status: "success", data: record };
   } catch (error) {

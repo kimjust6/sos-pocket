@@ -1,12 +1,21 @@
 import { IResoleOrdersDB } from "@/app/common/data/interfaces";
 
 export const getOrderTotal = (order: IResoleOrdersDB) => {
+  let total = 0;
   const subs = order?.subtotals;
   if (typeof subs === "number") {
-    return subs;
+    total = subs;
+  } else if (Array.isArray(subs)) {
+    total = subs.reduce((acc: number, curr: number) => acc + curr, 0);
   }
-  if (Array.isArray(subs)) {
-    return subs.reduce((acc, curr) => acc + curr, 0);
+
+  if (order?.shipping_amount) {
+    total += order.shipping_amount;
   }
-  return 0;
+
+  if (order?.tax) {
+    total += order.tax;
+  }
+
+  return total;
 };

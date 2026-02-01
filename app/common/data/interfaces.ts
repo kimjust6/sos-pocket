@@ -88,9 +88,12 @@ export interface IResoleOrdersDB {
   shoes: any[]; // Changed to any[] to accommodate expanded records or IDs. Ideally should be ResoleShoesResponse[]
   created: string; // Changed to string to match IsoDateString
   updated: string; // Changed to string to match IsoDateString
-  subtotals: number[];
+  subtotals: number; // Changed from number[] to number for consistency with usage
   delivery_type: string;
   expand?: any; // PocketBase expansion
+  payment_status?: string;
+  shipping_amount?: number;
+  tax?: number;
 }
 
 // this is strictly to iterate over the keys of the interface object when checking for puts
@@ -111,8 +114,11 @@ export const sampleResoleOrders: IResoleOrdersDB = {
   shoes: [],
   created: "",
   updated: "",
-  subtotals: [0],
+  subtotals: 0,
   delivery_type: "",
+  payment_status: "",
+  shipping_amount: 0,
+  tax: 0,
 };
 
 export interface IAddress {
