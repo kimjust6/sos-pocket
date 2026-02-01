@@ -36,11 +36,11 @@ export const sampleUser: IUsersDB = {
 };
 
 export interface IResoleShoesDB {
-  orderId?: string;
+  id?: string;
   size: string;
   manufacturer: string;
   model: string;
-  serviceType: string;
+  service_type: string;
   addons: [{ name: string; price: number }] | [];
   image: string;
   location: string;
@@ -60,11 +60,11 @@ export interface IResoleInfo {
 
 // this is strictly to iterate over the keys of the interface object for puts
 export const sampleResoleShoes: IResoleShoesDB = {
-  orderId: "",
+  id: "",
   size: "",
   manufacturer: "",
   model: "",
-  serviceType: "",
+  service_type: "",
   addons: [{ name: "", price: 0 }],
   image: "",
   location: "",
@@ -73,43 +73,45 @@ export const sampleResoleShoes: IResoleShoesDB = {
 };
 
 export interface IResoleOrdersDB {
-  _id?: string;
-  fName: string;
-  lName: string;
+  id?: string;
+  _id?: string; // Keep for backward compatibility if needed, but prefer id
+  first_name: string;
+  last_name: string;
   email: string;
-  address: string;
+  street_address: string;
   city: string;
   province: string;
   provider: string;
-  postalCode: string;
+  postal_code: string;
   country: string;
   phone: string;
   status: string;
   shoes: IResoleShoesDB[] | string[]; //array of ids
-  created: Date;
-  updated: Date;
-  subtotal: number[];
-  deliveryType: string;
+  created: string; // Changed to string to match IsoDateString
+  updated: string; // Changed to string to match IsoDateString
+  subtotals: number[];
+  delivery_type: string;
 }
 
 // this is strictly to iterate over the keys of the interface object when checking for puts
+// this is strictly to iterate over the keys of the interface object when checking for puts
 export const sampleResoleOrders: IResoleOrdersDB = {
-  fName: "",
-  lName: "",
+  first_name: "",
+  last_name: "",
   email: "",
-  address: "",
+  street_address: "",
   city: "",
   province: "",
   provider: "",
-  postalCode: "",
+  postal_code: "",
   country: "",
   phone: "",
   status: "",
   shoes: [],
-  created: new Date(),
-  updated: new Date(),
-  subtotal: [0],
-  deliveryType: "",
+  created: "",
+  updated: "",
+  subtotals: [0],
+  delivery_type: "",
 };
 
 export interface IAddress {

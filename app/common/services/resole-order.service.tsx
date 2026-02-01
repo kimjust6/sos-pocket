@@ -149,24 +149,24 @@ export async function postResoleOrder(
 ) {
   const session: any = await auth();
 
-  let orderTime = new Date();
+  let orderTime = new Date().toISOString();
   let order: IResoleOrdersDB = {
-    fName: shoeAddress.fName,
-    lName: shoeAddress.lName,
+    first_name: shoeAddress.fName,
+    last_name: shoeAddress.lName,
     email: shoeAddress.email,
     provider: session.user.provider,
-    address: shoeAddress.address,
+    street_address: shoeAddress.address,
     city: shoeAddress.city,
     province: shoeAddress.province,
-    postalCode: shoeAddress.postal.replace(/\s/g, ""),
+    postal_code: shoeAddress.postal.replace(/\s/g, ""),
     country: "Canada",
     phone: shoeAddress.phone,
     status: "Order Received",
     shoes: [],
     created: orderTime,
     updated: orderTime,
-    subtotal: [],
-    deliveryType: "Pickup",
+    subtotals: [],
+    delivery_type: "Pickup",
   };
 
   let myShoeArray: IResoleShoesDB[] = [];
@@ -175,7 +175,7 @@ export async function postResoleOrder(
       size: shoes[i].size,
       manufacturer: shoes[i].manufacturer,
       model: shoes[i].model,
-      serviceType: shoes[i].serviceType,
+      service_type: shoes[i].serviceType,
       addons: [],
       image: shoes[i].image,
       location: "Missisauga",

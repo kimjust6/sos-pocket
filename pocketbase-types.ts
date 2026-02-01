@@ -11,9 +11,16 @@ export enum Collections {
   Mfas = "_mfas",
   Otps = "_otps",
   Superusers = "_superusers",
-  Address = "address",
-  Order = "order",
+  Addresses = "addresses",
+  Brands = "brands",
+  CartItem = "cart_item",
+  Categories = "categories",
+  OrderItems = "order_items",
+  Orders = "orders",
+  ProductVariants = "product_variants",
+  Products = "products",
   ResoleShoes = "resole_shoes",
+  Reviews = "reviews",
   Users = "users",
 }
 
@@ -95,7 +102,11 @@ export type SuperusersRecord = {
   verified?: boolean;
 };
 
-export type AddressRecord = {
+export enum AddressesTypeOptions {
+  "billing" = "billing",
+  "shipping" = "shipping",
+}
+export type AddressesRecord = {
   apt?: string;
   city?: string;
   country?: string;
@@ -107,16 +118,98 @@ export type AddressRecord = {
   postal_code?: string;
   province?: string;
   street_address?: string;
+  type?: AddressesTypeOptions;
   updated: IsoAutoDateString;
 };
 
-export type OrderRecord = {
+export type BrandsRecord = {
+  created: IsoAutoDateString;
+  description?: string;
+  id: string;
+  is_active?: boolean;
+  logo?: FileNameString;
+  name?: string;
+  updated: IsoAutoDateString;
+};
+
+export type CartItemRecord = {
+  created: IsoAutoDateString;
+  id: string;
+  product?: RecordIdString;
+  quantity?: number;
+  updated: IsoAutoDateString;
+  user?: RecordIdString;
+  variant?: RecordIdString;
+};
+
+export type CategoriesRecord = {
+  created: IsoAutoDateString;
+  description?: string;
+  id: string;
+  image?: FileNameString;
+  is_active?: boolean;
+  name?: string;
+  sort_order?: number;
+  updated: IsoAutoDateString;
+};
+
+export type OrderItemsRecord = {
+  created: IsoAutoDateString;
+  id: string;
+  order?: RecordIdString;
+  product?: RecordIdString;
+  product_name?: string;
+  quantity?: number;
+  unit_price?: number;
+  unit_tax?: number;
+  updated: IsoAutoDateString;
+  variant?: RecordIdString;
+  variant_name?: string;
+};
+
+export type OrdersRecord<Torder_notes = unknown> = {
+  billing_address?: RecordIdString;
   created: IsoAutoDateString;
   delivery_type?: string;
+  discount?: number;
   id: string;
-  status?: string;
+  order_notes?: null | Torder_notes;
+  order_status?: string;
+  payment_status?: string;
+  shipping_address?: RecordIdString;
+  shipping_amount?: number;
   subtotals?: number;
   tax?: number;
+  updated: IsoAutoDateString;
+  user?: RecordIdString;
+};
+
+export type ProductVariantsRecord = {
+  cost?: number;
+  created: IsoAutoDateString;
+  id: string;
+  image?: FileNameString[];
+  is_active?: boolean;
+  name?: string;
+  price?: number;
+  product?: RecordIdString;
+  sku?: HTMLString;
+  stock?: number;
+  updated: IsoAutoDateString;
+};
+
+export type ProductsRecord = {
+  base_price?: number;
+  brand?: RecordIdString;
+  category?: RecordIdString;
+  created: IsoAutoDateString;
+  description?: string;
+  id: string;
+  is_active?: boolean;
+  is_featured?: boolean;
+  name?: string;
+  short_description?: string;
+  sku?: string;
   updated: IsoAutoDateString;
 };
 
@@ -138,6 +231,17 @@ export type ResoleShoesRecord = {
   size?: number;
   status?: ResoleShoesStatusOptions;
   updated: IsoAutoDateString;
+};
+
+export type ReviewsRecord = {
+  comment?: HTMLString;
+  created: IsoAutoDateString;
+  id: string;
+  is_approved?: boolean;
+  product?: RecordIdString;
+  rating?: number;
+  updated: IsoAutoDateString;
+  user?: RecordIdString;
 };
 
 export enum UsersRoleOptions {
@@ -172,12 +276,28 @@ export type OtpsResponse<Texpand = unknown> = Required<OtpsRecord> &
   BaseSystemFields<Texpand>;
 export type SuperusersResponse<Texpand = unknown> = Required<SuperusersRecord> &
   AuthSystemFields<Texpand>;
-export type AddressResponse<Texpand = unknown> = Required<AddressRecord> &
+export type AddressesResponse<Texpand = unknown> = Required<AddressesRecord> &
   BaseSystemFields<Texpand>;
-export type OrderResponse<Texpand = unknown> = Required<OrderRecord> &
+export type BrandsResponse<Texpand = unknown> = Required<BrandsRecord> &
+  BaseSystemFields<Texpand>;
+export type CartItemResponse<Texpand = unknown> = Required<CartItemRecord> &
+  BaseSystemFields<Texpand>;
+export type CategoriesResponse<Texpand = unknown> = Required<CategoriesRecord> &
+  BaseSystemFields<Texpand>;
+export type OrderItemsResponse<Texpand = unknown> = Required<OrderItemsRecord> &
+  BaseSystemFields<Texpand>;
+export type OrdersResponse<
+  Torder_notes = unknown,
+  Texpand = unknown,
+> = Required<OrdersRecord<Torder_notes>> & BaseSystemFields<Texpand>;
+export type ProductVariantsResponse<Texpand = unknown> =
+  Required<ProductVariantsRecord> & BaseSystemFields<Texpand>;
+export type ProductsResponse<Texpand = unknown> = Required<ProductsRecord> &
   BaseSystemFields<Texpand>;
 export type ResoleShoesResponse<Texpand = unknown> =
   Required<ResoleShoesRecord> & BaseSystemFields<Texpand>;
+export type ReviewsResponse<Texpand = unknown> = Required<ReviewsRecord> &
+  BaseSystemFields<Texpand>;
 export type UsersResponse<Texpand = unknown> = Required<UsersRecord> &
   AuthSystemFields<Texpand>;
 
@@ -189,9 +309,16 @@ export type CollectionRecords = {
   _mfas: MfasRecord;
   _otps: OtpsRecord;
   _superusers: SuperusersRecord;
-  address: AddressRecord;
-  order: OrderRecord;
+  addresses: AddressesRecord;
+  brands: BrandsRecord;
+  cart_item: CartItemRecord;
+  categories: CategoriesRecord;
+  order_items: OrderItemsRecord;
+  orders: OrdersRecord;
+  product_variants: ProductVariantsRecord;
+  products: ProductsRecord;
   resole_shoes: ResoleShoesRecord;
+  reviews: ReviewsRecord;
   users: UsersRecord;
 };
 
@@ -201,9 +328,16 @@ export type CollectionResponses = {
   _mfas: MfasResponse;
   _otps: OtpsResponse;
   _superusers: SuperusersResponse;
-  address: AddressResponse;
-  order: OrderResponse;
+  addresses: AddressesResponse;
+  brands: BrandsResponse;
+  cart_item: CartItemResponse;
+  categories: CategoriesResponse;
+  order_items: OrderItemsResponse;
+  orders: OrdersResponse;
+  product_variants: ProductVariantsResponse;
+  products: ProductsResponse;
   resole_shoes: ResoleShoesResponse;
+  reviews: ReviewsResponse;
   users: UsersResponse;
 };
 

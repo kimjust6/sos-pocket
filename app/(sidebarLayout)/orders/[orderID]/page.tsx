@@ -50,19 +50,19 @@ const OrderDetails = () => {
           <p className="text-muted-foreground">{shippingInfo?.status}</p>
           <Separator className="my-4" />
           <h2 className="font-semibold text-lg">Delivery Method</h2>
-          <p className="text-muted-foreground">{shippingInfo?.deliveryType}</p>
+          <p className="text-muted-foreground">{shippingInfo?.delivery_type}</p>
 
           <Separator className="my-4" />
           <h2 className="font-semibold text-lg">Delivery Address</h2>
           <div className="text-muted-foreground">
             <p>
-              {shippingInfo?.fName} {shippingInfo?.lName}
+              {shippingInfo?.first_name} {shippingInfo?.last_name}
             </p>
-            <p>{shippingInfo.address}</p>
+            <p>{shippingInfo.street_address}</p>
             <p>
               {shippingInfo?.city}, {shippingInfo?.province}
             </p>
-            <p className="uppercase">{shippingInfo?.postalCode}</p>
+            <p className="uppercase">{shippingInfo?.postal_code}</p>
           </div>
         </CardContent>
       </Card>
@@ -99,7 +99,7 @@ const OrderDetails = () => {
                       <br />
                       <span className="font-semibold text-md">Service: </span>
                       <span className="text-muted-foreground">
-                        {shoe.serviceType}
+                        {shoe.service_type}
                       </span>
                     </div>
                     <span>${shoe?.price?.toFixed(2) ?? (0.0).toFixed(2)}</span>

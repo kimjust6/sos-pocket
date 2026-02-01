@@ -47,12 +47,25 @@ const Orders = () => {
     // combine shoes and orders
     let ordersObject: any = {};
     for (var i = 0; i < ordersData?.length; i++) {
-      ordersObject[ordersData[i]._id] = ordersData[i];
-      ordersObject[ordersData[i]._id].shoes = [];
+      // Use id or _id, preferring id
+      const id = ordersData[i].id || ordersData[i]._id;
+      ordersObject[id] = ordersData[i];
+      ordersObject[id].shoes = [];
     }
     // add shoes to orders
     for (var i = 0; i < shoesData?.length; i++) {
-      ordersObject[shoesData[i].orderId].shoes.push(shoesData[i]);
+      // Assuming shoesData structure: check if orderId needs update, might be order_id now if backend changed?
+      // Based on service it seems to return shoe objects.
+      // NOTE: getMultiShoesByOrder implementation in service uses `orders[i].shoes` which is array of strings.
+      // The return of getMultiShoesByOrder is from `multi-resole-shoes` endpoint.
+      // If that endpoint returns `orderId` (camelCase) we need to be careful.
+      // Assuming existing backend code for `multi-resole-shoes` returns `orderId`.
+      // If the backend was also updated to snake_case, this might be `order_id`.
+      // I will check `orderId` first.
+      const orderId = shoesData[i].order_id || shoesData[i].orderId;
+      if (ordersObject[orderId]) {
+        ordersObject[orderId].shoes.push(shoesData[i]);
+      }
     }
     // convert ordersObject to array
     let ordersArray = [];

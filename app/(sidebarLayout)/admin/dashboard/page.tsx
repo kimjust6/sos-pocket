@@ -42,12 +42,16 @@ const AdminDashboard = () => {
     // combine shoes and orders
     let ordersObject: any = {};
     for (var i = 0; i < ordersData?.length; i++) {
-      ordersObject[ordersData[i]._id] = ordersData[i];
-      ordersObject[ordersData[i]._id].shoes = [];
+      const id = ordersData[i].id || ordersData[i]._id;
+      ordersObject[id] = ordersData[i];
+      ordersObject[id].shoes = [];
     }
     // add shoes to orders
     for (var i = 0; i < shoesData?.length; i++) {
-      ordersObject[shoesData[i].orderId].shoes.push(shoesData[i]);
+      const orderId = shoesData[i].order_id || shoesData[i].orderId;
+      if (ordersObject[orderId]) {
+        ordersObject[orderId].shoes.push(shoesData[i]);
+      }
     }
     // convert ordersObject to array
     let ordersArray: any = [];
