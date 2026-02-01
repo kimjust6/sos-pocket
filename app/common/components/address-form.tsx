@@ -31,7 +31,7 @@ const formSchema = z.object({
   province: z.string().min(1, "Province is required"),
   postal_code: z.string().min(1, "Postal code is required"),
   country: z.string().default("Canada"),
-  phone: z.string().optional(),
+  phone: z.string().min(10, "Phone number is required"),
 });
 
 interface AddressFormProps {
@@ -217,7 +217,7 @@ export function AddressForm({ onSuccess, initialData }: AddressFormProps) {
           name="phone"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Phone (Optional)</FormLabel>
+              <FormLabel>Phone</FormLabel>
               <FormControl>
                 <Input placeholder="555-555-5555" {...field} />
               </FormControl>
