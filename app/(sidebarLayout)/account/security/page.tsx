@@ -1,5 +1,6 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
+import Image from "next/image";
 import {
   getCurrentUser,
   onAuthStateChange,
@@ -16,7 +17,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Loader2, ArrowLeft } from "lucide-react";
+import { Loader2, ArrowLeft, Camera, User2 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -25,6 +26,10 @@ const SecurityPage = () => {
   const [user, setUser] = useState<UsersResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [editForm, setEditForm] = useState({ name: "", phone: "" });
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   const { toast } = useToast();
   const router = useRouter();
 
@@ -56,16 +61,41 @@ const SecurityPage = () => {
     };
   }, []);
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setAvatarFile(file);
+      const url = URL.createObjectURL(file);
+      setPreviewUrl(url);
+    }
+  };
+
+  const getProfileImage = () => {
+    if (previewUrl) return previewUrl;
+    if (user?.avatar) {
+      const pbUrl =
+        process.env.NEXT_PUBLIC_POCKETBASE_URL || "https://sos-be.jkim.win";
+      return `${pbUrl}/api/files/${user.collectionId}/${user.id}/${user.avatar}`;
+    }
+    return null;
+  };
+
   const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) return;
 
     try {
       const pb = getPocketBase();
-      const updatedUser = await pb.collection("users").update(user.id, {
-        name: editForm.name,
-        phone: editForm.phone,
-      });
+      const formData = new FormData();
+      formData.append("name", editForm.name);
+      formData.append("phone", editForm.phone);
+      if (avatarFile) {
+        formData.append("avatar", avatarFile);
+      }
+
+      const updatedUser = await pb
+        .collection("users")
+        .update(user.id, formData);
       // @ts-ignore
       setUser(updatedUser);
       toast({
@@ -100,6 +130,8 @@ const SecurityPage = () => {
     );
   }
 
+  const profileImageSrc = getProfileImage();
+
   return (
     <div className="min-h-screen bg-muted/5 py-12">
       <div className="container max-w-2xl">
@@ -118,6 +150,43 @@ const SecurityPage = () => {
           </CardHeader>
           <CardContent>
             <form onSubmit={handleUpdateProfile} className="space-y-6">
+              {/* Avatar Upload Section */}
+              <div className="flex flex-col items-center justify-center gap-4">
+                <div
+                  className="relative group cursor-pointer"
+                  onClick={() => fileInputRef.current?.click()}>
+                  <div className="h-24 w-24 rounded-full overflow-hidden ring-4 ring-background shadow-lg relative bg-primary/10 flex items-center justify-center">
+                    {profileImageSrc ? (
+                      <Image
+                        src={profileImageSrc}
+                        alt="Profile"
+                        fill
+                        className="object-cover"
+                      />
+                    ) : (
+                      <User2 className="h-10 w-10 text-primary" />
+                    )}
+                  </div>
+                  <div className="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                    <Camera className="h-8 w-8 text-white" />
+                  </div>
+                </div>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => fileInputRef.current?.click()}>
+                  Change Photo
+                </Button>
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  className="hidden"
+                  accept="image/*"
+                  onChange={handleFileChange}
+                />
+              </div>
+
               <div className="grid gap-2">
                 <Label htmlFor="name">Name</Label>
                 <Input

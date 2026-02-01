@@ -118,7 +118,7 @@ const ProfilePage = () => {
         <div className="absolute inset-0 h-full w-full bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_50%,#000_70%,transparent_100%)] dark:bg-[radial-gradient(#1f2937_1px,transparent_1px)] pointer-events-none" />
 
         <div className="container relative px-4 mx-auto max-w-6xl">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-10">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-10 bg-background p-6 rounded-lg border shadow-sm">
             <div>
               <h1 className="text-3xl font-bold tracking-tight">
                 Your Account
