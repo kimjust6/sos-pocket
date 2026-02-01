@@ -3,7 +3,7 @@
 import { auth } from "@/auth";
 import { IAddress, IResoleInfo } from "@/app/common/data/interfaces";
 import { getPocketBase } from "@/app/common/services/pocketbase.service";
-import { Collections, ResoleShoesStatusOptions } from "@/pocketbase-types";
+import { Collections, ResoleItemsStatusOptions } from "@/pocketbase-types";
 
 /**
  * @name getAllResoleOrders
@@ -137,10 +137,10 @@ export async function postResoleOrder(
         addons: "", // Map addons if needed
         image: shoe.image, // Assuming this is a file ID or URL handled correctly
         location: "Missisauga",
-        status: ResoleShoesStatusOptions.Ordered,
+        status: ResoleItemsStatusOptions["Ordered"],
       };
       const record = await pb
-        .collection(Collections.ResoleShoes)
+        .collection(Collections.ResoleItems)
         .create(shoeData);
       shoeIds.push(record.id);
     }

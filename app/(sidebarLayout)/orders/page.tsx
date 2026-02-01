@@ -95,6 +95,28 @@ const Orders = () => {
     };
   }, []);
 
+  const tabs = [
+    { id: "resoles", label: "Resoles" },
+    { id: "orders", label: "Orders" },
+    { id: "cancelled-orders", label: "Cancelled Orders" },
+  ];
+
+  const [activeTab, setActiveTab] = useState("resoles");
+
+  const filteredOrders = orders?.filter((order: any) => {
+    if (activeTab === "cancelled-orders") {
+      return order.status === "Cancelled";
+    }
+    // For both "orders" and "resoles", we show non-cancelled orders for now.
+    // "resoles" could specifically filter for orders with shoes if product orders existed.
+    if (activeTab === "resoles") {
+      return order.status !== "Cancelled" && order.shoes?.length > 0;
+    }
+
+    // Default "orders" tab shows all active orders
+    return order.status !== "Cancelled";
+  });
+
   return (
     <section className="w-full max-w-5xl mx-auto px-4 py-8">
       {/* Header Section */}
@@ -119,25 +141,25 @@ const Orders = () => {
       {/* Tabs / Filters */}
       <div className="border-b mb-6 text-sm">
         <div className="flex gap-6 overflow-x-auto pb-1">
-          <button className="border-b-2 border-foreground font-semibold pb-2 px-1 text-foreground whitespace-nowrap">
-            Orders
-          </button>
-          <button className="border-b-2 border-transparent hover:border-muted-foreground pb-2 px-1 text-muted-foreground hover:text-foreground whitespace-nowrap">
-            Buy Again
-          </button>
-          <button className="border-b-2 border-transparent hover:border-muted-foreground pb-2 px-1 text-muted-foreground hover:text-foreground whitespace-nowrap">
-            Not Yet Shipped
-          </button>
-          <button className="border-b-2 border-transparent hover:border-muted-foreground pb-2 px-1 text-muted-foreground hover:text-foreground whitespace-nowrap">
-            Cancelled Orders
-          </button>
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={
+                activeTab === tab.id
+                  ? "border-b-2 border-foreground font-semibold pb-2 px-1 text-foreground whitespace-nowrap"
+                  : "border-b-2 border-transparent hover:border-muted-foreground pb-2 px-1 text-muted-foreground hover:text-foreground whitespace-nowrap"
+              }>
+              {tab.label}
+            </button>
+          ))}
         </div>
       </div>
 
       {/* Count & Time Range Filter */}
       <div className="flex items-center gap-2 mb-6 text-sm flex-wrap">
         <span className="font-semibold text-foreground">
-          {orders ? orders.length : 0} orders
+          {filteredOrders ? filteredOrders.length : 0} orders
         </span>
         <span className="text-muted-foreground">placed in</span>
         <Select defaultValue="3months">
@@ -160,8 +182,8 @@ const Orders = () => {
           <div className="flex justify-center p-12">
             <Spinner />
           </div>
-        ) : orders && orders.length > 0 ? (
-          orders.map((order: IResoleOrdersDB) => {
+        ) : filteredOrders && filteredOrders.length > 0 ? (
+          filteredOrders.map((order: IResoleOrdersDB) => {
             return <AmazonOrderCard order={order} key={order.id} />;
           })
         ) : (

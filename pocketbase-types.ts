@@ -20,8 +20,9 @@ export enum Collections {
   Orders = "orders",
   ProductVariants = "product_variants",
   Products = "products",
-  ResoleShoes = "resole_shoes",
+  ResoleItems = "resole_items",
   Reviews = "reviews",
+  TaxRates = "tax_rates",
   Users = "users",
 }
 
@@ -224,13 +225,13 @@ export type ProductsRecord = {
   updated: IsoAutoDateString;
 };
 
-export enum ResoleShoesStatusOptions {
+export enum ResoleItemsStatusOptions {
   "Ordered" = "Ordered",
   "In Progress" = "In Progress",
   "Completed" = "Completed",
   "Cancelled" = "Cancelled",
 }
-export type ResoleShoesRecord = {
+export type ResoleItemsRecord = {
   addons?: string;
   created: IsoAutoDateString;
   id: string;
@@ -240,8 +241,9 @@ export type ResoleShoesRecord = {
   model?: string;
   service_type?: string;
   size?: number;
-  status?: ResoleShoesStatusOptions;
+  status?: ResoleItemsStatusOptions;
   updated: IsoAutoDateString;
+  user?: RecordIdString;
 };
 
 export type ReviewsRecord = {
@@ -253,6 +255,14 @@ export type ReviewsRecord = {
   rating?: number;
   updated: IsoAutoDateString;
   user?: RecordIdString;
+};
+
+export type TaxRatesRecord = {
+  created: IsoAutoDateString;
+  id: string;
+  province?: string;
+  tax_rate?: number;
+  updated: IsoAutoDateString;
 };
 
 export enum UsersRoleOptions {
@@ -307,9 +317,11 @@ export type ProductVariantsResponse<Texpand = unknown> =
   Required<ProductVariantsRecord> & BaseSystemFields<Texpand>;
 export type ProductsResponse<Texpand = unknown> = Required<ProductsRecord> &
   BaseSystemFields<Texpand>;
-export type ResoleShoesResponse<Texpand = unknown> =
-  Required<ResoleShoesRecord> & BaseSystemFields<Texpand>;
+export type ResoleItemsResponse<Texpand = unknown> =
+  Required<ResoleItemsRecord> & BaseSystemFields<Texpand>;
 export type ReviewsResponse<Texpand = unknown> = Required<ReviewsRecord> &
+  BaseSystemFields<Texpand>;
+export type TaxRatesResponse<Texpand = unknown> = Required<TaxRatesRecord> &
   BaseSystemFields<Texpand>;
 export type UsersResponse<Texpand = unknown> = Required<UsersRecord> &
   AuthSystemFields<Texpand>;
@@ -331,8 +343,9 @@ export type CollectionRecords = {
   orders: OrdersRecord;
   product_variants: ProductVariantsRecord;
   products: ProductsRecord;
-  resole_shoes: ResoleShoesRecord;
+  resole_items: ResoleItemsRecord;
   reviews: ReviewsRecord;
+  tax_rates: TaxRatesRecord;
   users: UsersRecord;
 };
 
@@ -351,8 +364,9 @@ export type CollectionResponses = {
   orders: OrdersResponse;
   product_variants: ProductVariantsResponse;
   products: ProductsResponse;
-  resole_shoes: ResoleShoesResponse;
+  resole_items: ResoleItemsResponse;
   reviews: ReviewsResponse;
+  tax_rates: TaxRatesResponse;
   users: UsersResponse;
 };
 
