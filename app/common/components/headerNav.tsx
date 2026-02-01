@@ -13,7 +13,14 @@ import {
 } from "@/app/common/services/pocketbase.service";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetTrigger,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
+} from "@/components/ui/sheet";
 import { siteConfig } from "@/config/site";
 import { cn } from "@/lib/utils";
 import { useAtom } from "jotai";
@@ -99,6 +106,12 @@ const HeaderNav = () => {
           </Button>
         </SheetTrigger>
         <SheetContent side="left" className="mx-2">
+          <SheetHeader>
+            <SheetTitle className="sr-only">Mobile Menu</SheetTitle>
+            <SheetDescription className="sr-only">
+              Navigation menu for mobile devices
+            </SheetDescription>
+          </SheetHeader>
           <MobileLink
             href="/"
             className="flex items-center"
