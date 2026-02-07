@@ -24,8 +24,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Mail } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { FcGoogle } from "react-icons/fc";
 import * as z from "zod";
@@ -45,6 +45,8 @@ export function LoginForm({ className, ...props }: LoginFormProps) {
   const [isLoadingEmail, setIsLoadingEmail] = useState<boolean>(false);
   const [isLoadingGoogle, setIsLoadingGoogle] = useState<boolean>(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl") || "/account";
 
   const form = useForm<z.infer<typeof LoginFormSchema>>({
     resolver: zodResolver(LoginFormSchema),
@@ -86,7 +88,7 @@ export function LoginForm({ className, ...props }: LoginFormProps) {
           title: "Welcome!",
           description: "You have successfully signed in with Google.",
         });
-        router.push("/account");
+        router.push(callbackUrl);
       } else {
         toast({
           title: "Uh oh! Something went wrong.",
@@ -116,7 +118,7 @@ export function LoginForm({ className, ...props }: LoginFormProps) {
           title: "Welcome!",
           description: "You have successfully signed in.",
         });
-        router.push("/account");
+        router.push(callbackUrl);
       } else {
         toast({
           title: "Uh oh! Something went wrong.",
@@ -220,6 +222,8 @@ export function LoginForm({ className, ...props }: LoginFormProps) {
 
 const Login = () => {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl") || "/account";
   const [isLoading, setIsLoading] = useState(true);
   const [isMounted, setIsMounted] = useState(false);
 
@@ -233,7 +237,7 @@ const Login = () => {
     // Check if already authenticated (only on client-side)
     try {
       if (isAuthenticated() && getCurrentUser()) {
-        router.push("/account");
+        router.push(callbackUrl);
         return;
       }
     } catch (e) {
@@ -244,12 +248,12 @@ const Login = () => {
     // Subscribe to auth state changes
     const unsubscribe = onAuthStateChange((token, record) => {
       if (token && record) {
-        router.push("/account");
+        router.push(callbackUrl);
       }
     });
 
     return () => unsubscribe();
-  }, [router, isMounted]);
+  }, [router, isMounted, callbackUrl]);
 
   if (!isMounted || isLoading) {
     return (
@@ -316,4 +320,15 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default function LoginPage() {
+  return (
+    <Suspense
+      fallback={
+        <section className="h-full w-full flex items-center justify-center">
+          <Spinner className="h-8 w-8 animate-spin" />
+        </section>
+      }>
+      <Login />
+    </Suspense>
+  );
+}
