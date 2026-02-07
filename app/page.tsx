@@ -1,8 +1,6 @@
 "use client";
 
-import React from "react";
-import Link from "next/link";
-import Image from "next/image";
+import { isAuthenticated } from "@/app/common/services/pocketbase.service";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -12,17 +10,19 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import {
-  Mountain,
-  Recycle,
-  Clock,
-  Shield,
-  ChevronRight,
-  Sparkles,
-  Package,
-  CheckCircle2,
   ArrowRight,
+  CheckCircle2,
+  ChevronRight,
+  Clock,
+  Mountain,
+  Package,
+  Recycle,
+  Shield,
+  Sparkles,
   Star,
 } from "lucide-react";
+import Link from "next/link";
+import { useEffect, useState } from "react";
 
 const services = [
   {
@@ -100,6 +100,12 @@ const testimonials = [
 ];
 
 const Home = () => {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    setIsLoggedIn(isAuthenticated());
+  }, []);
+
   return (
     <div>
       {/* Hero Section - Full Screen */}
@@ -148,22 +154,26 @@ const Home = () => {
                     <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
                   </Button>
                 </Link>
-                <Link href="/auth/login">
-                  <Button
-                    variant="outline"
-                    size="lg"
-                    className="text-lg px-8 py-6">
-                    Login
-                  </Button>
-                </Link>
-                <Link href="/auth/register">
-                  <Button
-                    variant="outline"
-                    size="lg"
-                    className="text-lg px-8 py-6">
-                    Create Account
-                  </Button>
-                </Link>
+                {!isLoggedIn && (
+                  <>
+                    <Link href="/auth/login">
+                      <Button
+                        variant="outline"
+                        size="lg"
+                        className="text-lg px-8 py-6">
+                        Login
+                      </Button>
+                    </Link>
+                    <Link href="/auth/register">
+                      <Button
+                        variant="outline"
+                        size="lg"
+                        className="text-lg px-8 py-6">
+                        Create Account
+                      </Button>
+                    </Link>
+                  </>
+                )}
               </div>
 
               <div className="flex items-center gap-6 pt-4">
