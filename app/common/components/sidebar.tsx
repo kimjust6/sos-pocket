@@ -16,31 +16,58 @@ import { siteConfig } from "@/config/site";
 import { cn } from "@/lib/utils";
 import { TooltipArrow } from "@radix-ui/react-tooltip";
 import { useAtom } from "jotai";
-import { signOut, useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { IoLogOutOutline } from "react-icons/io5";
 import { sidebarAtom } from "@/app/common/atoms/atoms";
+import {
+  getCurrentUser,
+  logout,
+  onAuthStateChange,
+} from "@/app/common/services/pocketbase.service";
 
 const Sidebar = () => {
   const [sidebar, setSidebar] = useAtom(sidebarAtom);
+  const router = useRouter();
 
   const pathname = usePathname();
-  const { data: session, status } = useSession();
   const [items, setItems] = useState<any[]>([]);
+  const [user, setUser] = useState<any>(null);
 
   useEffect(() => {
-    let s = session as any;
-    if (s?.user?.role === "admin" || s?.user?.role === "employee") {
+    // Initial load
+    const currentUser = getCurrentUser();
+    setUser(currentUser);
+    updateItems(currentUser);
+
+    // Subscribe to auth changes
+    const unsubscribe = onAuthStateChange((token, record) => {
+      setUser(record);
+      updateItems(record);
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, []);
+
+  const updateItems = (u: any) => {
+    if (u?.role === "admin" || u?.role === "employee") {
       setItems(adminSidebarItems);
-    } else if (s?.user?.role === "user") {
+    } else if (u?.role === "user") {
       setItems(userSidebarItems);
     } else {
       setItems(guestSidebarItems);
     }
-  }, [status]);
+  };
+
+  const handleLogout = () => {
+    logout();
+    router.push("/");
+    router.refresh();
+  };
 
   return (
     <aside
@@ -102,7 +129,7 @@ const Sidebar = () => {
             </Tooltip>
           );
         })}
-        {session?.user && (
+        {user && (
           <>
             <Separator className="my-4" />
             {/* if the sidebar is expanded, show text, otherwise show icon and tooltip  */}
@@ -113,9 +140,7 @@ const Sidebar = () => {
                   "hover:bg-transparent hover:underline",
                   "justify-start"
                 )}
-                onClick={() => {
-                  signOut();
-                }}>
+                onClick={handleLogout}>
                 <IoLogOutOutline />
                 {sidebar && <span className="ml-3">Sign Out</span>}
               </button>
@@ -128,9 +153,7 @@ const Sidebar = () => {
                       "hover:bg-transparent hover:underline",
                       "justify-start"
                     )}
-                    onClick={() => {
-                      signOut();
-                    }}>
+                    onClick={handleLogout}>
                     <IoLogOutOutline />
                   </button>
                 </TooltipTrigger>

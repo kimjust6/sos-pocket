@@ -7,14 +7,24 @@ import {
   navbarItemsUser,
   userSidebarItems,
 } from "@/app/common/data/data";
+import {
+  getCurrentUser,
+  onAuthStateChange,
+} from "@/app/common/services/pocketbase.service";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetTrigger,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
+} from "@/components/ui/sheet";
 import { siteConfig } from "@/config/site";
 import { cn } from "@/lib/utils";
 import { useAtom } from "jotai";
 import { Menu } from "lucide-react";
-import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link, { LinkProps } from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -23,31 +33,46 @@ import { useEffect, useState } from "react";
 import { sidebarAtom } from "../atoms/atoms";
 
 const HeaderNav = () => {
-  const { data: session, status } = useSession();
-
   const [topNavItems, setTopNavItems] = useState<any[]>([]);
   const [sideNavItems, setSideNavItems] = useState<any[]>([]);
+  const [user, setUser] = useState<any>(null);
 
   const pathname = usePathname();
   const [sidebar, setSidebar] = useAtom(sidebarAtom);
   const [mobileSidebar, setMobileSidebar] = useState(false);
 
   useEffect(() => {
-    let s = session as any;
-    if (s?.user?.role) {
+    // Initial check
+    const currentUser = getCurrentUser();
+    setUser(currentUser);
+    updateNav(currentUser);
+
+    // Subscribe to changes
+    const unsubscribe = onAuthStateChange((token, record) => {
+      setUser(record);
+      updateNav(record);
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, []);
+
+  const updateNav = (currentUser: any) => {
+    if (currentUser?.role) {
       setTopNavItems(navbarItemsUser);
     } else {
       setTopNavItems(navbarItemsGuest);
     }
 
-    if (s?.user?.role === "admin" || s?.user?.role === "employee") {
+    if (currentUser?.role === "admin" || currentUser?.role === "employee") {
       setSideNavItems(adminSidebarItems);
-    } else if (s?.user?.role === "user") {
+    } else if (currentUser?.role === "user") {
       setSideNavItems(userSidebarItems);
     } else {
       setSideNavItems(guestSidebarItems);
     }
-  }, [status]);
+  };
 
   return (
     <>
@@ -81,6 +106,12 @@ const HeaderNav = () => {
           </Button>
         </SheetTrigger>
         <SheetContent side="left" className="mx-2">
+          <SheetHeader>
+            <SheetTitle className="sr-only">Mobile Menu</SheetTitle>
+            <SheetDescription className="sr-only">
+              Navigation menu for mobile devices
+            </SheetDescription>
+          </SheetHeader>
           <MobileLink
             href="/"
             className="flex items-center"

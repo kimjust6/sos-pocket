@@ -1,5 +1,5 @@
 import React from "react";
-import { AiFillHome } from "react-icons/ai";
+import { AiFillHome, AiOutlineShoppingCart } from "react-icons/ai";
 import { BsFillBagFill } from "react-icons/bs";
 import { FaUser } from "react-icons/fa";
 import { GiConverseShoe } from "react-icons/gi";
@@ -12,7 +12,7 @@ import { TbSquareRoundedPlusFilled } from "react-icons/tb";
 export const navbarItemsGuest = [
   // {
   //   name: "Login",
-  //   link: "/profile",
+  //   link: "/account",
   //   key: "0619108817",
   // },
   // {
@@ -32,7 +32,7 @@ export const navbarItemsUser = [
 
 // left side bar (admin)
 export const adminSidebarItems = [
-  { name: "Home", link: "/home", icon: React.createElement(AiFillHome) },
+  { name: "Store", link: "/store", icon: React.createElement(AiFillHome) },
   {
     name: "Dashboard",
     link: "/admin/dashboard",
@@ -52,8 +52,8 @@ export const adminSidebarItems = [
 
 // left side bar (user)
 export const userSidebarItems = [
-  { name: "Home", link: "/home", icon: React.createElement(AiFillHome) },
-  { name: "Profile", link: "/profile", icon: React.createElement(FaUser) },
+  { name: "Store", link: "/store", icon: React.createElement(AiFillHome) },
+  { name: "Account", link: "/account", icon: React.createElement(FaUser) },
   {
     name: "My Orders",
     link: "/orders",
@@ -64,10 +64,15 @@ export const userSidebarItems = [
     link: "/resole-form",
     icon: React.createElement(TbSquareRoundedPlusFilled),
   },
+  {
+    name: "Cart",
+    link: "/cart",
+    icon: React.createElement(AiOutlineShoppingCart),
+  },
 ];
 // left side bar (user)
 export const guestSidebarItems = [
-  { name: "Home", link: "/home", icon: React.createElement(AiFillHome) },
+  { name: "Store", link: "/store", icon: React.createElement(AiFillHome) },
   {
     name: "Login",
     link: "/auth/login",

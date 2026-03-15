@@ -149,6 +149,7 @@
 
   * {
     @apply border-border;
+    corner-shape: squircle;
   }
   body {
     @apply bg-background text-foreground;

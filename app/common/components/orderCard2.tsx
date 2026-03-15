@@ -37,7 +37,8 @@ const MyImage = (props: myImageProps) => {
   return (
     <Image
       src={
-        (props?.shoes[0]?.image as string) ?? "https://i.imgur.com/1s6cWdT.jpg"
+        ((props?.shoes[0] as IResoleShoesDB)?.image as string) ??
+        "https://i.imgur.com/1s6cWdT.jpg"
       }
       className={cn("rounded-sm ", props.className)}
       width={200}
@@ -56,7 +57,7 @@ export default function OrderCard2({ resoleOrders }: orderProps) {
         className="w-full sm:hidden"
         shoes={resoleOrders.shoes}></MyImage>
       <CardHeader>
-        <CardTitle>Order: #{resoleOrders._id?.slice(-8)} </CardTitle>
+        <CardTitle>Order: #{resoleOrders.id?.slice(-8)} </CardTitle>
         <CardDescription>
           <span className=" font-semibold">Status: </span>
           {resoleOrders.status}
@@ -70,7 +71,7 @@ export default function OrderCard2({ resoleOrders }: orderProps) {
               <p>
                 Placed On:{" "}
                 <span className="text-muted-foreground">
-                  {formatDate(resoleOrders.created)}
+                  {formatDate(new Date(resoleOrders.created))}
                 </span>
               </p>
               {resoleOrders?.shoes?.length > 0 && (
@@ -90,7 +91,7 @@ export default function OrderCard2({ resoleOrders }: orderProps) {
               )}{" "}
               Ship To:{" "}
               <span className="text-muted-foreground">
-                {resoleOrders.fName} {resoleOrders.lName}
+                {resoleOrders.first_name} {resoleOrders.last_name}
               </span>
             </div>
             <p className="font-semibold">
@@ -104,7 +105,7 @@ export default function OrderCard2({ resoleOrders }: orderProps) {
         </>
       </CardContent>
       <CardFooter>
-        <Link href={`/orders/${resoleOrders._id}`} className="w-full">
+        <Link href={`/orders/${resoleOrders.id}`} className="w-full">
           <Button type="button" className="w-full">
             View Details
           </Button>

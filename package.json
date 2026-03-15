@@ -8,7 +8,8 @@
     "start": "next dev",
     "lint": "next lint",
     "prepare": "husky install .husky",
-    "precommit": "npx lint-staged"
+    "precommit": "npx lint-staged",
+    "typegen": "npx pocketbase-typegen --env"
   },
   "dependencies": {
     "@edgestore/react": "^0.7.0",
@@ -53,14 +54,13 @@
     "jotai": "^2.6.1",
     "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.477.0",
-    "mongodb": "^6.3.0",
     "next": "^16.1.6",
     "next-auth": "^5.0.0-beta.30",
     "next-themes": "^0.4.6",
-    "nodemailer": "^7.0.7",
+    "nodemailer": "^7.0.13",
+    "pocketbase": "^0.25.2",
     "postcss": "^8.4.32",
     "react": "^19.2.4",
-    "pocketbase": "^0.25.2",
     "react-day-picker": "^9.6.6",
     "react-dom": "^19.2.4",
     "react-dropzone": "^14.3.8",
@@ -83,6 +83,9 @@
     "husky": "^8.0.3",
     "lint-staged": "^15.2.0",
     "prettier": "^3.1.1"
+  },
+  "overrides": {
+    "nodemailer": "^7.0.13"
   },
   "lint-staged": {
     "*": [

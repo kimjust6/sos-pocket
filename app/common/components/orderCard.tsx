@@ -19,8 +19,8 @@ const OrderCard = ({ resoleOrders }: any) => {
         myResoleOrders.map((shoes: any) => {
           return (
             <button
-              key={shoes._id}
-              id={shoes._id}
+              key={shoes.id}
+              id={shoes.id}
               onClick={(e) => {
                 setShoeDetails(shoes);
                 setShowModal((ShowModal) => !ShowModal);
@@ -32,7 +32,7 @@ const OrderCard = ({ resoleOrders }: any) => {
 
               <p className="card_label">
                 Order No:{" "}
-                <span className="card_text">{shoes._id.slice(-8)}</span>
+                <span className="card_text">{shoes.id.slice(-8)}</span>
               </p>
               <p className="card_label">
                 {shoes.shoes.map((shoe: any, index: number) => {

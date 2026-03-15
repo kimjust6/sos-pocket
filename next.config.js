@@ -19,6 +19,10 @@ const nextConfig = {
         protocol: "https",
         hostname: "files.edgestore.dev",
       },
+      {
+        protocol: "https",
+        hostname: "sos-be.jkim.win",
+      },
     ],
   },
 

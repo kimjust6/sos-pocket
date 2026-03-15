@@ -32,7 +32,7 @@ const Footer = () => {
           <Link href="https://summitoutdoorstore.ca/">
             Summit Outdoor Store{" "}
           </Link>
-          © 2024. All Rights Reserved.
+          © {new Date().getFullYear()}. All Rights Reserved.
         </span>
         <div className="flex mt-4 sm:justify-center md:mt-0 space-x-5 rtl:space-x-reverse">
           <Link href="#" className="text-muted-foreground">

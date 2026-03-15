@@ -38,14 +38,14 @@ const OrderTable = ({ resoleOrders }: any) => {
                       "border-b cursor-pointer hover:bg-stone-50  hover:opacity-70 " +
                       (index % 2 === 0 ? " bg-white " : " bg-zinc-100 ")
                     }
-                    key={order._id}>
+                    key={order.id}>
                     <td className="px-6 py-4 uppercase">
-                      {order._id.slice(-8)}
+                      {order.id.slice(-8)}
                     </td>
                     <th
                       scope="row"
                       className="px-6 py-4 font-medium text-zinc-900 whitespace-nowrap capitalize">
-                      {order.fName} {order.lName}
+                      {order.first_name} {order.last_name}
                     </th>
                     <td className="px-6 py-4 capitalize">{order.status}</td>
                     <td className="px-6 py-4 lowercase">{order.email}</td>
