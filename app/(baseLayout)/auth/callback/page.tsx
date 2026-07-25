@@ -1,12 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { authenticateWithGoogle } from "@/app/common/services/pocketbase.service";
 import Spinner from "@/app/common/components/spinner";
 import { toast } from "@/components/ui/use-toast";
 
-export default function AuthCallback() {
+function AuthCallbackContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [error, setError] = useState<string | null>(null);
@@ -83,5 +83,19 @@ export default function AuthCallback() {
       <Spinner className="h-8 w-8 animate-spin" />
       <p className="text-muted-foreground">Completing sign in...</p>
     </section>
+  );
+}
+
+export default function AuthCallback() {
+  return (
+    <Suspense
+      fallback={
+        <section className="h-full w-full flex flex-col items-center justify-center gap-4">
+          <Spinner className="h-8 w-8 animate-spin" />
+          <p className="text-muted-foreground">Completing sign in...</p>
+        </section>
+      }>
+      <AuthCallbackContent />
+    </Suspense>
   );
 }
