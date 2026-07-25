@@ -2,11 +2,14 @@ import { IResoleOrdersDB } from "@/app/common/data/interfaces";
 
 export const getOrderTotal = (order: IResoleOrdersDB) => {
   let total = 0;
-  const subs = order?.subtotals;
+  const subs = order?.subtotals as number | number[] | undefined;
   if (typeof subs === "number") {
     total = subs;
   } else if (Array.isArray(subs)) {
-    total = subs.reduce((acc: number, curr: number) => acc + curr, 0);
+    total = (subs as number[]).reduce(
+      (acc: number, curr: number) => acc + curr,
+      0
+    );
   }
 
   if (order?.shipping_amount) {
